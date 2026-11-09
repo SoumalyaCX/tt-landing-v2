@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TeamTrace: Stop measuring motion. Start measuring focus.</title>
+<meta name="description" content="TeamTrace shows you how much of each person's day was focused, how much was fragmented, and when focus broke.">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- Styles: shared site styles first, then this page's styles -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+<!-- Icons: Phosphor icon sprite, used as <svg class="ph"><use href="#ph-NAME"/></svg> (see js/icons.js) -->
+<script src="js/icons.js"></script>
+
+<!-- ============ NAV ============ -->
+<!-- Scroll progress bar: fills left to right as the page is read (js/main.js) -->
+<div class="scroll-progress" id="scroll-progress" aria-hidden="true"><i></i></div>
+
+<!-- ============================ NAVIGATION ============================
+     Desktop: Product and Solutions mega flyouts (category rail + link panel), Explore and Company dropdowns.
+     Mobile (<=1060px): the hamburger opens .mobile-panel. Behavior lives in js/main.js. -->
+<header class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-bar">
+      <a class="brand" href="#top" aria-label="TeamTrace home"><img src="data:image/png;base64,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" alt="TeamTrace" width="111" height="30"></a>
+      <ul class="nav-links">
+        <li class="nav-item nav-sol" data-dd>
+          <button class="nav-link" type="button" aria-expanded="false">Product <svg class="ph" aria-hidden="true"><use href="#ph-caret-down"/></svg></button>
+          <div class="sol-fly compact">
+            <div class="sol-inner">
+              <div class="sol-rail" role="tablist" aria-orientation="vertical" aria-label="Product modules">
+                <div class="sol-rail-label">Product</div>
+                <button class="sol-cat" type="button" role="tab" id="prod-tab-0" aria-selected="true" aria-controls="prod-panel-0" tabindex="0">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-trend-up"/></svg></span>
+                  <span class="sol-cat-txt"><b>Productivity Management</b><span>Focus, output and delivery</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="prod-tab-1" aria-selected="false" aria-controls="prod-panel-1" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-eye"/></svg></span>
+                  <span class="sol-cat-txt"><b>Employee Monitoring</b><span>Activity, with the context</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="prod-tab-2" aria-selected="false" aria-controls="prod-panel-2" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-shield-warning"/></svg></span>
+                  <span class="sol-cat-txt"><b>Insider Risk Monitoring</b><span>Spot and stop data risk</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="prod-tab-3" aria-selected="false" aria-controls="prod-panel-3" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-kanban"/></svg></span>
+                  <span class="sol-cat-txt"><b>Project &amp; Task Management</b><span>Plan and ship the work</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="prod-tab-4" aria-selected="false" aria-controls="prod-panel-4" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-clock"/></svg></span>
+                  <span class="sol-cat-txt"><b>Time Tracking &amp; Attendance</b><span>Hours, timesheets and leave</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="prod-tab-5" aria-selected="false" aria-controls="prod-panel-5" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-users-three"/></svg></span>
+                  <span class="sol-cat-txt"><b>Resource Management</b><span>People, capacity and skills</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="prod-tab-6" aria-selected="false" aria-controls="prod-panel-6" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-chart-bar"/></svg></span>
+                  <span class="sol-cat-txt"><b>Workforce Analytics</b><span>One metric system, every level</span></span>
+                </button>
+              </div>
+              <div class="sol-panels">
+                <div class="sol-panel on" id="prod-panel-0" role="tabpanel" aria-labelledby="prod-tab-0">
+                  <p class="sol-head"><b>Productivity Management</b><span>Focus, output and delivery</span></p>
+                  <a class="sol-link" href="/product/productivity-management/productivity-metrics"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-gauge"/></svg></span><span class="sol-link-txt"><b>Productivity Metrics</b><span>Focus index, deep work and productive hours</span></span></a>
+                  <a class="sol-link" href="/product/productivity-management/benchmarking-and-comparison"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-scales"/></svg></span><span class="sol-link-txt"><b>Benchmarking &amp; Comparison</b><span>Compare people and teams against fair baselines</span></span></a>
+                  <a class="sol-link" href="/product/productivity-management/coaching-and-burnout"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-heartbeat"/></svg></span><span class="sol-link-txt"><b>Coaching &amp; Burnout</b><span>Spot burnout and drift early, coach with evidence</span></span></a>
+                  <a class="sol-link" href="/product/productivity-management/delivery-tracking"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-calendar-check"/></svg></span><span class="sol-link-txt"><b>Delivery Tracking</b><span>Planned versus actual, and on-time delivery</span></span></a>
+                  <a class="sol-link" href="/product/productivity-management/ai-adoption"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-sparkle"/></svg></span><span class="sol-link-txt"><b>AI Adoption</b><span>How AI tools are used across your teams</span></span></a>
+                  <a class="sol-link" href="/product/productivity-management/developer-productivity"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-code"/></svg></span><span class="sol-link-txt"><b>Developer Productivity</b><span>Code time, focus and flow for engineering</span></span></a>
+                  <a class="sol-more" href="/product/productivity-management">Explore Productivity Management <svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></a>
+                </div>
+                <div class="sol-panel" id="prod-panel-1" role="tabpanel" aria-labelledby="prod-tab-1">
+                  <p class="sol-head"><b>Employee Monitoring</b><span>Activity, with the context</span></p>
+                  <a class="sol-link" href="/product/employee-monitoring/employee-screen-monitoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-monitor"/></svg></span><span class="sol-link-txt"><b>Employee Screen Monitoring</b><span>Screenshots with the work context behind them</span></span></a>
+                  <a class="sol-link" href="/product/employee-monitoring/user-activity-monitoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-pulse"/></svg></span><span class="sol-link-txt"><b>User Activity Monitoring</b><span>App, URL and session activity on every device</span></span></a>
+                  <a class="sol-link" href="/product/employee-monitoring/real-time-activity-monitoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-broadcast"/></svg></span><span class="sol-link-txt"><b>Real-Time Activity Monitoring</b><span>Who is working on what, right now</span></span></a>
+                  <a class="sol-link" href="/product/employee-monitoring/application-and-website-tracking"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-browsers"/></svg></span><span class="sol-link-txt"><b>Application &amp; Website Tracking</b><span>Time spent per app and site, classified</span></span></a>
+                  <a class="sol-more" href="/product/employee-monitoring">Explore Employee Monitoring <svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></a>
+                </div>
+                <div class="sol-panel" id="prod-panel-2" role="tabpanel" aria-labelledby="prod-tab-2">
+                  <p class="sol-head"><b>Insider Risk Monitoring</b><span>Spot and stop data risk</span></p>
+                  <a class="sol-link" href="/product/insider-risk-monitoring/incident-triggered-video-recording"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-video-camera"/></svg></span><span class="sol-link-txt"><b>Incident Triggered Video Recording</b><span>Records only when a risk rule fires</span></span></a>
+                  <a class="sol-link" href="/product/insider-risk-monitoring/file-activity-monitoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-file-magnifying-glass"/></svg></span><span class="sol-link-txt"><b>File Activity Monitoring</b><span>File moves, copies and uploads</span></span></a>
+                  <a class="sol-link" href="/product/insider-risk-monitoring/keystroke-monitoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-keyboard"/></svg></span><span class="sol-link-txt"><b>Keystroke Monitoring</b><span>For high-risk roles, set by policy</span></span></a>
+                  <a class="sol-link" href="/product/insider-risk-monitoring/usb-and-website-blocking"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-prohibit"/></svg></span><span class="sol-link-txt"><b>USB &amp; Website Blocking</b><span>Block devices and sites by policy</span></span></a>
+                  <a class="sol-more" href="/product/insider-risk-monitoring">Explore Insider Risk Monitoring <svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></a>
+                </div>
+                <div class="sol-panel" id="prod-panel-3" role="tabpanel" aria-labelledby="prod-tab-3">
+                  <p class="sol-head"><b>Project &amp; Task Management</b><span>Plan and ship the work</span></p>
+                  <a class="sol-link" href="/product/project-and-task-management/kanban-and-agile-workflows"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-kanban"/></svg></span><span class="sol-link-txt"><b>Kanban &amp; Agile Workflows</b><span>Boards, sprints and backlogs</span></span></a>
+                  <a class="sol-link" href="/product/project-and-task-management/core-project-management-tools"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-list-checks"/></svg></span><span class="sol-link-txt"><b>Core Project Management Tools</b><span>Projects, tasks, owners and deadlines</span></span></a>
+                  <a class="sol-link" href="/product/project-and-task-management/budget-monitoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-wallet"/></svg></span><span class="sol-link-txt"><b>Budget Monitoring</b><span>Planned versus actual cost per project</span></span></a>
+                  <a class="sol-link" href="/product/project-and-task-management/wiki"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-book-open"/></svg></span><span class="sol-link-txt"><b>Wiki</b><span>Team knowledge next to the work</span></span></a>
+                  <a class="sol-more" href="/product/project-and-task-management">Explore Project &amp; Task Management <svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></a>
+                </div>
+                <div class="sol-panel" id="prod-panel-4" role="tabpanel" aria-labelledby="prod-tab-4">
+                  <p class="sol-head"><b>Time Tracking &amp; Attendance</b><span>Hours, timesheets and leave</span></p>
+                  <a class="sol-link" href="/product/time-tracking-and-attendance/project-task-and-activity-time-tracking"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-timer"/></svg></span><span class="sol-link-txt"><b>Project, Task &amp; Activity Time Tracking</b><span>Time logged against the work it belongs to</span></span></a>
+                  <a class="sol-link" href="/product/time-tracking-and-attendance/automated-timesheets"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-calendar-blank"/></svg></span><span class="sol-link-txt"><b>Automated Timesheets</b><span>Timesheets that fill themselves</span></span></a>
+                  <a class="sol-link" href="/product/time-tracking-and-attendance/attendance-tracking"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-user-check"/></svg></span><span class="sol-link-txt"><b>Attendance Tracking</b><span>Check-ins, shifts and presence</span></span></a>
+                  <a class="sol-link" href="/product/time-tracking-and-attendance/leave-and-time-off-management"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-airplane-tilt"/></svg></span><span class="sol-link-txt"><b>Leave &amp; Time-Off Management</b><span>Requests, approvals and balances</span></span></a>
+                  <a class="sol-more" href="/product/time-tracking-and-attendance">Explore Time Tracking &amp; Attendance <svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></a>
+                </div>
+                <div class="sol-panel" id="prod-panel-5" role="tabpanel" aria-labelledby="prod-tab-5">
+                  <p class="sol-head"><b>Resource Management</b><span>People, capacity and skills</span></p>
+                  <a class="sol-link" href="/product/resource-management/employee-scheduling"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-calendar-dots"/></svg></span><span class="sol-link-txt"><b>Employee Scheduling</b><span>Shifts and schedules in one place</span></span></a>
+                  <a class="sol-link" href="/product/resource-management/resource-allocation-and-utilization"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-chart-pie-slice"/></svg></span><span class="sol-link-txt"><b>Resource Allocation &amp; Utilization</b><span>Who is free, who is stretched</span></span></a>
+                  <a class="sol-link" href="/product/resource-management/capacity-planning"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-gauge"/></svg></span><span class="sol-link-txt"><b>Capacity Planning</b><span>Plan workload and hiring ahead</span></span></a>
+                  <a class="sol-link" href="/product/resource-management/skill-matrix-and-search"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-magnifying-glass"/></svg></span><span class="sol-link-txt"><b>Skill Matrix &amp; Search</b><span>Find the right person by skill</span></span></a>
+                  <a class="sol-more" href="/product/resource-management">Explore Resource Management <svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></a>
+                </div>
+                <div class="sol-panel" id="prod-panel-6" role="tabpanel" aria-labelledby="prod-tab-6">
+                  <p class="sol-head"><b>Workforce Analytics</b><span>One metric system, every level</span></p>
+                  <a class="sol-link" href="/product/workforce-analytics/individual-analytics"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-user"/></svg></span><span class="sol-link-txt"><b>Individual Analytics</b><span>One person, in context</span></span></a>
+                  <a class="sol-link" href="/product/workforce-analytics/team-and-department-analytics"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-users-three"/></svg></span><span class="sol-link-txt"><b>Team &amp; Department Analytics</b><span>Where the pattern is</span></span></a>
+                  <a class="sol-link" href="/product/workforce-analytics/org-level-analytics"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-buildings"/></svg></span><span class="sol-link-txt"><b>Org-Level Analytics</b><span>The whole trace, no sampling</span></span></a>
+                  <a class="sol-link" href="/product/workforce-analytics/system-dashboards"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-squares-four"/></svg></span><span class="sol-link-txt"><b>System Dashboards</b><span>The standard set, out of the box</span></span></a>
+                  <a class="sol-more" href="/product/workforce-analytics">Explore Workforce Analytics <svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item nav-sol" data-dd>
+          <button class="nav-link" type="button" aria-expanded="false">Solutions <svg class="ph" aria-hidden="true"><use href="#ph-caret-down"/></svg></button>
+          <div class="sol-fly">
+            <div class="sol-inner">
+              <div class="sol-rail" role="tablist" aria-orientation="vertical" aria-label="Solution categories">
+                <div class="sol-rail-label">Solutions</div>
+                <button class="sol-cat" type="button" role="tab" id="solu-tab-0" aria-selected="true" aria-controls="solu-panel-0" tabindex="0">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-target"/></svg></span>
+                  <span class="sol-cat-txt"><b>By Use Case</b><span>What it does</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="solu-tab-1" aria-selected="false" aria-controls="solu-panel-1" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-users-three"/></svg></span>
+                  <span class="sol-cat-txt"><b>By Teams &amp; Role</b><span>Who it&rsquo;s for</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="solu-tab-2" aria-selected="false" aria-controls="solu-panel-2" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-house-line"/></svg></span>
+                  <span class="sol-cat-txt"><b>Work Mode</b><span>How work is organized</span></span>
+                </button>
+                <button class="sol-cat" type="button" role="tab" id="solu-tab-3" aria-selected="false" aria-controls="solu-panel-3" tabindex="-1">
+                  <span class="sol-cat-ico"><svg class="ph" aria-hidden="true"><use href="#ph-factory"/></svg></span>
+                  <span class="sol-cat-txt"><b>Industry</b><span>Where it&rsquo;s used</span></span>
+                </button>
+              </div>
+              <div class="sol-panels">
+                <div class="sol-panel on" id="solu-panel-0" role="tabpanel" aria-labelledby="solu-tab-0">
+                  <a class="sol-link" href="/solutions/by-use-case/workforce-planning"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-target"/></svg></span><span class="sol-link-txt"><b>Workforce Planning</b><span>The who &mdash; capacity, allocation and ETA</span></span></a>
+                  <a class="sol-link" href="/solutions/by-use-case/productivity-management"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-trend-up"/></svg></span><span class="sol-link-txt"><b>Productivity Management</b><span>The what &mdash; where the hours actually went</span></span></a>
+                  <a class="sol-link" href="/solutions/by-use-case/employee-monitoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-eye"/></svg></span><span class="sol-link-txt"><b>Employee Monitoring</b><span>The why &mdash; activity with the reason behind it</span></span></a>
+                  <a class="sol-link" href="/solutions/by-use-case/user-activity-monitoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-pulse"/></svg></span><span class="sol-link-txt"><b>User Activity Monitoring</b><span>Capture on every app, URL and session</span></span></a>
+                  <a class="sol-link" href="/solutions/by-use-case/hourly-scoring"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-clock"/></svg></span><span class="sol-link-txt"><b>Hourly Scoring</b><span>Every hour gets its own score</span></span></a>
+                  <a class="sol-link" href="/solutions/by-use-case/wellbeing-burnout"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-heartbeat"/></svg></span><span class="sol-link-txt"><b>Wellbeing &amp; Burnout</b><span>Both ends of the barbell, caught early</span></span></a>
+                  <a class="sol-link" href="/solutions/by-use-case/tool-consolidation"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-stack"/></svg></span><span class="sol-link-txt"><b>Tool Consolidation</b><span>Seven subscriptions, one record</span></span></a>
+                  <a class="sol-link" href="/solutions/by-use-case/compliance-audit"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-lock-key"/></svg></span><span class="sol-link-txt"><b>Compliance &amp; Audit</b><span>Policy, records and evidence in one place</span></span></a>
+                  <a class="sol-link" href="/solutions/by-use-case/traceai"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-sparkle"/></svg></span><span class="sol-link-txt"><b>TraceAI</b><span>Ask the record from chat or your own agent</span></span></a>
+                </div>
+                <div class="sol-panel" id="solu-panel-1" role="tabpanel" aria-labelledby="solu-tab-1">
+                  <a class="sol-link" href="/solutions/by-teams-and-role/c-suite"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-crown-simple"/></svg></span><span class="sol-link-txt"><b>C-Suite</b><span>Organization-wide visibility, one metric system</span></span></a>
+                  <a class="sol-link" href="/solutions/by-teams-and-role/human-resource"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-users-three"/></svg></span><span class="sol-link-txt"><b>Human Resource</b><span>Wellbeing, compliance and the evidence behind both</span></span></a>
+                  <a class="sol-link" href="/solutions/by-teams-and-role/it-managers"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-desktop-tower"/></svg></span><span class="sol-link-txt"><b>IT Managers</b><span>Fewer tools, one continuous record</span></span></a>
+                  <a class="sol-link" href="/solutions/by-teams-and-role/resource-managers"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-gauge"/></svg></span><span class="sol-link-txt"><b>Resource Managers</b><span>Capacity, allocation and drift</span></span></a>
+                </div>
+                <div class="sol-panel" id="solu-panel-2" role="tabpanel" aria-labelledby="solu-tab-2">
+                  <a class="sol-link" href="/solutions/by-work-mode/remote"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-house-line"/></svg></span><span class="sol-link-txt"><b>Remote</b><span>Work across time zones without losing the thread</span></span></a>
+                  <a class="sol-link" href="/solutions/by-work-mode/in-office"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-buildings"/></svg></span><span class="sol-link-txt"><b>In-Office</b><span>Floor presence, attendance and focus</span></span></a>
+                  <a class="sol-link" href="/solutions/by-work-mode/hybrid"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-arrows-left-right"/></svg></span><span class="sol-link-txt"><b>Hybrid</b><span>Office and remote on one timeline</span></span></a>
+                </div>
+                <div class="sol-panel grouped" id="solu-panel-3" role="tabpanel" aria-labelledby="solu-tab-3">
+                  <div class="sol-group"><p class="sol-group-label">Technology &amp; Digital</p>
+                    <a class="sol-link slim" href="/solutions/by-industry/it-services-and-software"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-code"/></svg></span><span class="sol-link-txt"><b>IT Services &amp; Software</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/saas-and-product-engineering"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-cube"/></svg></span><span class="sol-link-txt"><b>SaaS &amp; Product Engineering</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/managed-service-providers"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-hard-drives"/></svg></span><span class="sol-link-txt"><b>Managed Service Providers</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/digital-and-creative-agencies"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-megaphone-simple"/></svg></span><span class="sol-link-txt"><b>Digital &amp; Creative Agencies</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/design-animation-and-vfx"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-film-slate"/></svg></span><span class="sol-link-txt"><b>Design, Animation &amp; VFX</b></span></a>
+                  </div>
+                  <div class="sol-group"><p class="sol-group-label">Outsourcing &amp; Support</p>
+                    <a class="sol-link slim" href="/solutions/by-industry/bpo-and-ites"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-globe-hemisphere-west"/></svg></span><span class="sol-link-txt"><b>BPO &amp; ITES</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/customer-support-and-contact-centers"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-headset"/></svg></span><span class="sol-link-txt"><b>Customer Support &amp; Contact Centers</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/staffing-recruitment-and-rpo"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-user-plus"/></svg></span><span class="sol-link-txt"><b>Staffing, Recruitment &amp; RPO</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/healthcare-rcm-and-medical-billing"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-stethoscope"/></svg></span><span class="sol-link-txt"><b>Healthcare RCM &amp; Medical Billing</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/insurance-operations"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-umbrella"/></svg></span><span class="sol-link-txt"><b>Insurance Operations</b></span></a>
+                  </div>
+                  <div class="sol-group"><p class="sol-group-label">Professional &amp; Regulated</p>
+                    <a class="sol-link slim" href="/solutions/by-industry/consulting-and-professional-services"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-briefcase"/></svg></span><span class="sol-link-txt"><b>Consulting &amp; Professional Services</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/accounting-audit-and-tax"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-calculator"/></svg></span><span class="sol-link-txt"><b>Accounting, Audit &amp; Tax</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/legal-and-lpo"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-scales"/></svg></span><span class="sol-link-txt"><b>Legal &amp; LPO</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/bfsi-back-office"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-bank"/></svg></span><span class="sol-link-txt"><b>BFSI Back-Office</b></span></a>
+                    <a class="sol-link slim" href="/solutions/by-industry/edtech-and-online-education"><span class="sol-ico"><svg class="ph" aria-hidden="true"><use href="#ph-graduation-cap"/></svg></span><span class="sol-link-txt"><b>EdTech &amp; Online Education</b></span></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li><a class="nav-link" href="#cta">Pricing</a></li>
+        <li><a class="nav-link" href="#trust">Resources</a></li>
+        <li class="nav-item" data-dd>
+          <button class="nav-link" type="button" aria-expanded="false">Explore <svg class="ph" aria-hidden="true"><use href="#ph-caret-down"/></svg></button>
+          <div class="dropdown">
+            <a href="#platform"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-pulse"/></svg></span><span class="dd-txt"><b>How the signal works</b><span>From capture to companion</span></span></a>
+            <a href="#trust"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-shield-check"/></svg></span><span class="dd-txt"><b>Research &amp; trust</b><span>What the evidence says</span></span></a>
+            <a href="#roi"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-trend-up"/></svg></span><span class="dd-txt"><b>The ROI</b><span>What productivity returns in a quarter</span></span></a>
+            <a href="#stories"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-users-three"/></svg></span><span class="dd-txt"><b>Customer stories</b><span>How teams use TeamTrace</span></span></a>
+            <a href="#integrations"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-plugs-connected"/></svg></span><span class="dd-txt"><b>Integrations</b><span>33 tools TeamTrace reads from</span></span></a>
+            <a href="#consolidation"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-eye"/></svg></span><span class="dd-txt"><b>Activity vs. metrics</b><span>What traditional tracking misses</span></span></a>
+            <a href="#metrics"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-clock"/></svg></span><span class="dd-txt"><b>Hourly scoring</b><span>Every hour gets its own score</span></span></a>
+            <a href="#metrics"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-gauge"/></svg></span><span class="dd-txt"><b>Dashboards</b><span>Role-based, system and custom</span></span></a>
+          </div>
+        </li>
+        <li class="nav-item" data-dd>
+          <button class="nav-link" type="button" aria-expanded="false">Company <svg class="ph" aria-hidden="true"><use href="#ph-caret-down"/></svg></button>
+          <div class="dropdown">
+            <a href="#top"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-flag"/></svg></span><span class="dd-txt"><b>Our mission</b><span>Visibility without surveillance</span></span></a>
+            <a href="#top"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-shield-check"/></svg></span><span class="dd-txt"><b>Ethics &amp; policy</b><span>What TeamTrace will not do</span></span></a>
+            <a href="#cta"><span class="dd-ico"><svg class="ph" aria-hidden="true"><use href="#ph-headset"/></svg></span><span class="dd-txt"><b>Contact</b><span>Book a demo</span></span></a>
+          </div>
+        </li>
+      </ul>
+      <div class="nav-right">
+        <a class="login" href="#">Log in</a>
+        <a class="btn btn-ghost btn-sm signup" href="#">Sign up</a>
+        <a class="btn btn-primary btn-sm demo" href="#cta">Book a demo</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-panel" aria-label="Open menu"><span></span></button>
+      </div>
+    </div>
+    <div class="mobile-panel" id="mobile-panel">
+      <div class="mnav-group"><b>Product</b>
+        <details class="mnav-sub"><summary>Productivity Management</summary>
+          <a href="/product/productivity-management/productivity-metrics">Productivity Metrics</a><a href="/product/productivity-management/benchmarking-and-comparison">Benchmarking &amp; Comparison</a><a href="/product/productivity-management/coaching-and-burnout">Coaching &amp; Burnout</a><a href="/product/productivity-management/delivery-tracking">Delivery Tracking</a><a href="/product/productivity-management/ai-adoption">AI Adoption</a><a href="/product/productivity-management/developer-productivity">Developer Productivity</a>
+        </details>
+        <details class="mnav-sub"><summary>Employee Monitoring</summary>
+          <a href="/product/employee-monitoring/employee-screen-monitoring">Employee Screen Monitoring</a><a href="/product/employee-monitoring/user-activity-monitoring">User Activity Monitoring</a><a href="/product/employee-monitoring/real-time-activity-monitoring">Real-Time Activity Monitoring</a><a href="/product/employee-monitoring/application-and-website-tracking">Application &amp; Website Tracking</a>
+        </details>
+        <details class="mnav-sub"><summary>Insider Risk Monitoring</summary>
+          <a href="/product/insider-risk-monitoring/incident-triggered-video-recording">Incident Triggered Video Recording</a><a href="/product/insider-risk-monitoring/file-activity-monitoring">File Activity Monitoring</a><a href="/product/insider-risk-monitoring/keystroke-monitoring">Keystroke Monitoring</a><a href="/product/insider-risk-monitoring/usb-and-website-blocking">USB &amp; Website Blocking</a>
+        </details>
+        <details class="mnav-sub"><summary>Project &amp; Task Management</summary>
+          <a href="/product/project-and-task-management/kanban-and-agile-workflows">Kanban &amp; Agile Workflows</a><a href="/product/project-and-task-management/core-project-management-tools">Core Project Management Tools</a><a href="/product/project-and-task-management/budget-monitoring">Budget Monitoring</a><a href="/product/project-and-task-management/wiki">Wiki</a>
+        </details>
+        <details class="mnav-sub"><summary>Time Tracking &amp; Attendance</summary>
+          <a href="/product/time-tracking-and-attendance/project-task-and-activity-time-tracking">Project, Task &amp; Activity Time Tracking</a><a href="/product/time-tracking-and-attendance/automated-timesheets">Automated Timesheets</a><a href="/product/time-tracking-and-attendance/attendance-tracking">Attendance Tracking</a><a href="/product/time-tracking-and-attendance/leave-and-time-off-management">Leave &amp; Time-Off Management</a>
+        </details>
+        <details class="mnav-sub"><summary>Resource Management</summary>
+          <a href="/product/resource-management/employee-scheduling">Employee Scheduling</a><a href="/product/resource-management/resource-allocation-and-utilization">Resource Allocation &amp; Utilization</a><a href="/product/resource-management/capacity-planning">Capacity Planning</a><a href="/product/resource-management/skill-matrix-and-search">Skill Matrix &amp; Search</a>
+        </details>
+        <details class="mnav-sub"><summary>Workforce Analytics</summary>
+          <a href="/product/workforce-analytics/individual-analytics">Individual Analytics</a><a href="/product/workforce-analytics/team-and-department-analytics">Team &amp; Department Analytics</a><a href="/product/workforce-analytics/org-level-analytics">Org-Level Analytics</a><a href="/product/workforce-analytics/system-dashboards">System Dashboards</a>
+        </details>
+      </div>
+      <div class="mnav-group"><b>Solutions</b>
+        <details class="mnav-sub"><summary>By Use Case</summary>
+          <a href="/solutions/by-use-case/workforce-planning">Workforce Planning</a><a href="/solutions/by-use-case/productivity-management">Productivity Management</a><a href="/solutions/by-use-case/employee-monitoring">Employee Monitoring</a><a href="/solutions/by-use-case/user-activity-monitoring">User Activity Monitoring</a><a href="/solutions/by-use-case/hourly-scoring">Hourly Scoring</a><a href="/solutions/by-use-case/wellbeing-burnout">Wellbeing &amp; Burnout</a><a href="/solutions/by-use-case/tool-consolidation">Tool Consolidation</a><a href="/solutions/by-use-case/compliance-audit">Compliance &amp; Audit</a><a href="/solutions/by-use-case/traceai">TraceAI</a>
+        </details>
+        <details class="mnav-sub"><summary>By Teams &amp; Role</summary>
+          <a href="/solutions/by-teams-and-role/c-suite">C-Suite</a><a href="/solutions/by-teams-and-role/human-resource">Human Resource</a><a href="/solutions/by-teams-and-role/it-managers">IT Managers</a><a href="/solutions/by-teams-and-role/resource-managers">Resource Managers</a>
+        </details>
+        <details class="mnav-sub"><summary>Work Mode</summary>
+          <a href="/solutions/by-work-mode/remote">Remote</a><a href="/solutions/by-work-mode/in-office">In-Office</a><a href="/solutions/by-work-mode/hybrid">Hybrid</a>
+        </details>
+        <details class="mnav-sub"><summary>Industry</summary>
+          <p class="mnav-label">Technology &amp; Digital</p><a href="/solutions/by-industry/it-services-and-software">IT Services &amp; Software</a><a href="/solutions/by-industry/saas-and-product-engineering">SaaS &amp; Product Engineering</a><a href="/solutions/by-industry/managed-service-providers">Managed Service Providers</a><a href="/solutions/by-industry/digital-and-creative-agencies">Digital &amp; Creative Agencies</a><a href="/solutions/by-industry/design-animation-and-vfx">Design, Animation &amp; VFX</a><p class="mnav-label">Outsourcing &amp; Support</p><a href="/solutions/by-industry/bpo-and-ites">BPO &amp; ITES</a><a href="/solutions/by-industry/customer-support-and-contact-centers">Customer Support &amp; Contact Centers</a><a href="/solutions/by-industry/staffing-recruitment-and-rpo">Staffing, Recruitment &amp; RPO</a><a href="/solutions/by-industry/healthcare-rcm-and-medical-billing">Healthcare RCM &amp; Medical Billing</a><a href="/solutions/by-industry/insurance-operations">Insurance Operations</a><p class="mnav-label">Professional &amp; Regulated</p><a href="/solutions/by-industry/consulting-and-professional-services">Consulting &amp; Professional Services</a><a href="/solutions/by-industry/accounting-audit-and-tax">Accounting, Audit &amp; Tax</a><a href="/solutions/by-industry/legal-and-lpo">Legal &amp; LPO</a><a href="/solutions/by-industry/bfsi-back-office">BFSI Back-Office</a><a href="/solutions/by-industry/edtech-and-online-education">EdTech &amp; Online Education</a>
+        </details>
+      </div>
+      <div class="mnav-group"><b>Explore</b>
+        <a href="#platform">How the signal works</a><a href="#trust">Research &amp; trust</a><a href="#roi">The ROI</a><a href="#stories">Customer stories</a><a href="#integrations">Integrations</a><a href="#consolidation">Activity vs. metrics</a><a href="#metrics">Hourly scoring</a><a href="#metrics">Dashboards</a>
+      </div>
+      <div class="mnav-group"><b>Company</b>
+        <a href="#top">Our mission</a><a href="#top">Ethics &amp; policy</a><a href="#cta">Contact</a>
+      </div>
+      <div class="mnav-group mnav-plain"><a href="#cta">Pricing</a><a href="#trust">Resources</a><a href="#">Log in</a></div>
+      <div class="row"><a class="btn btn-ghost btn-sm" href="#">Sign up</a><a class="btn btn-primary btn-sm" href="#cta">Book a demo</a></div>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="orb-ui" id="orb-ui" aria-hidden="true"><div class="orb-eyes"><i></i><i></i></div><p class="orb-text" id="orb-text"></p></div>
+  <button class="ai-tag" id="ai-tag" type="button" aria-controls="ai-panel"><span class="st" aria-hidden="true"></span><b>TraceAI</b><span class="st-text" id="ai-status">Click me to ask</span></button>
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <h1 id="hero-title" class="display headline"><span class="kicker">Workforce management software</span><span class="hl">From planning work</span><span class="hl l2">to measuring outcomes</span></h1>
+      <p class="lede">TeamTrace is end-to-end workforce management software that orchestrates work from plan to outcome. Plan, execute, monitor, measure and investigate — on one connected record of how the work actually gets done.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#cta">Start free trial</a>
+        <a class="btn btn-ghost" href="#cta">Book a demo</a>
+      </div>
+      <ul class="trust trust-logos" aria-label="Compliance and certifications"><li title="GDPR compliant"><span class="seal lg plain"><img src="assets/compliance/gdpr.png" alt="GDPR compliant" width="64" height="64"></span></li><li title="DPDP compliant"><span class="seal lg plain"><img src="assets/compliance/dpdp.png" alt="DPDP compliant" width="64" height="64"></span></li><li title="ISO 27001:2022 certified"><span class="seal lg iso"><img src="assets/compliance/iso-27001-2022.png" alt="ISO 27001:2022 certified" width="64" height="64"></span></li><li title="ISO 9001:2015 certified"><span class="seal lg iso"><img src="assets/compliance/iso-9001-2015.png" alt="ISO 9001:2015 certified" width="64" height="64"></span></li></ul>
+    </div>
+
+    <aside class="readout" aria-label="Sample workday with TraceAI">
+      <div class="rd-head"><b>Sample workday</b><span>9:00 AM to 6:00 PM</span></div>
+      <div aria-live="polite">
+        <div class="rd-view" data-for="teamtrace">
+          <div class="rd-big" id="rd-score-row"><strong><span id="rd-score">78</span><span style="font-size:20px;color:var(--muted)">/100</span></strong><span>productivity score</span></div>
+          <div class="rd-rows">
+            <div class="rd-row" id="row-deep"><span>Deep focus</span><span class="v" id="v-deep">3h 50m</span><div class="rd-track"><i style="background:var(--sky)" data-w="50"></i></div></div>
+            <div class="rd-row" id="row-shallow"><span>Shallow focus</span><span class="v" id="v-shallow">2h 35m</span><div class="rd-track"><i style="background:var(--volt)" data-w="34"></i></div></div>
+            <div class="rd-row" id="row-idle"><span>Idle</span><span class="v" id="v-idle">1h 15m</span><div class="rd-track"><i style="background:var(--amber)" data-w="16"></i></div></div>
+          </div>
+          <ul class="rd-extra" id="rd-extra"></ul>
+          <p class="rd-note" id="rd-note">Longest focused session ran from 10:00 to 11:42 AM. Focus broke at 2:40 PM.</p>
+        </div>
+        <div class="ai" id="ai-panel" hidden>
+          <div class="ai-head"><span class="ai-mark"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-sparkle-fill"/></svg></span><b>TraceAI</b><button type="button" class="ai-close" id="ai-close" aria-label="Close TraceAI and return to the dashboard"><svg class="ph" aria-hidden="true"><use href="#ph-x"/></svg></button></div>
+          <p class="ai-sub" id="ai-sub">Tell TraceAI what to do. It makes the change for you, and you see it in your dashboard right away.</p>
+          <div class="ai-sugs" id="ai-sugs"></div>
+          <ol class="ai-steps" id="ai-steps" hidden></ol>
+          <p class="ai-msg" id="ai-msg" hidden></p>
+        </div>
+      </div>
+      <form class="ai-form" id="ai-form" autocomplete="off">
+        <span class="ai-mark"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-sparkle-fill"/></svg></span>
+        <label class="sr" for="ai-input">Give TraceAI an instruction</label>
+        <input id="ai-input" type="text" placeholder="Ask TraceAI to do anything" enterkeyhint="send">
+        <button type="submit" aria-label="Send to TraceAI"><svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></button>
+      </form>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ LOGOS ============ -->
+<section class="logos" aria-label="Customers">
+  <div class="wrap logos-row">
+    <p>Trusted by teams at</p>
+    <ul>
+      <li>Client logo</li><li>Client logo</li><li>Client logo</li><li>Client logo</li><li>Client logo</li><li>Client logo</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ LIFECYCLE ============ -->
+<section class="sec life" id="lifecycle" aria-labelledby="life-title">
+  <div class="wrap">
+    <div class="sec-head center">
+      <p class="label">The work orchestration lifecycle</p>
+      <h2 id="life-title" class="h2 ink">One record of work, from first plan to final diagnosis</h2>
+      <p class="lede">Five capabilities on a single workforce management platform. Select a stage to see what it answers and what it produces.</p>
+    </div>
+  </div>
+  <div class="life-scroll" id="life-scroll">
+   <div class="life-sticky">
+    <div class="wrap">
+    <div class="life-track" role="tablist" aria-label="Lifecycle stages">
+      <span class="life-line" aria-hidden="true"><i id="life-fill"></i></span>
+      <button role="tab" id="lt-0" aria-controls="lp-0" aria-selected="true" tabindex="0"><span class="n">01</span><b>Plan</b><small>Workforce planning</small></button>
+      <button role="tab" id="lt-1" aria-controls="lp-1" aria-selected="false" tabindex="-1"><span class="n">02</span><b>Execute</b><small>Projects, tasks &amp; activities</small></button>
+      <button role="tab" id="lt-2" aria-controls="lp-2" aria-selected="false" tabindex="-1"><span class="n">03</span><b>Monitor</b><small>User activity monitoring</small></button>
+      <button role="tab" id="lt-3" aria-controls="lp-3" aria-selected="false" tabindex="-1"><span class="n">04</span><b>Measure</b><small>Productivity management</small></button>
+      <button role="tab" id="lt-4" aria-controls="lp-4" aria-selected="false" tabindex="-1"><span class="n">05</span><b>Investigate</b><small>Employee monitoring</small></button>
+    </div>
+
+    <div class="life-panels">
+      <div class="life-panel" data-stage="01 Plan" role="tabpanel" id="lp-0" aria-labelledby="lt-0">
+        <div class="lp-copy"><p class="mod">Workforce planning</p><h3>Plan the work before it becomes work</h3><p>Decide who is supposed to be working on what, when, and to what ETA — so your workforce always knows what to pick up today, tomorrow, this week and next week.</p></div>
+        <div class="lp-vis glass">
+          <div class="vh"><b>Alex’s plan</b><span>Sprint 14</span></div>
+          <div class="plan">
+            <div><h4>Today</h4><p class="tk hi">API rate limits<em>ETA 4 PM</em></p><p class="tk">Review PR #214<em>ETA 5 PM</em></p></div>
+            <div><h4>Tomorrow</h4><p class="tk">Billing export<em>ETA Wed</em></p></div>
+            <div><h4>This week</h4><p class="tk">Sprint 14 demo prep<em>ETA Fri</em></p><p class="tk">Usage alerts<em>ETA Fri</em></p></div>
+            <div><h4>Next week</h4><p class="tk dim">Onboarding flow v2<em>ETA Tue</em></p></div>
+          </div>
+        </div>
+      </div>
+      <div class="life-panel" data-stage="02 Execute" role="tabpanel" id="lp-1" aria-labelledby="lt-1" hidden>
+        <div class="lp-copy"><p class="mod">Projects, tasks &amp; activities</p><h3>Get the work done, and know it happened</h3><p>Projects, tasks and activities are where execution is tracked — every update, every completion, every dependency, attached to the person who owns it.</p></div>
+        <div class="lp-vis glass ux ux-board">
+          <div class="ux-bar"><div class="ux-tabs"><span><svg class="ph" aria-hidden="true"><use href="#ph-list"/></svg>List</span><span class="on"><svg class="ph" aria-hidden="true"><use href="#ph-kanban"/></svg>Board</span><span><svg class="ph" aria-hidden="true"><use href="#ph-calendar-blank"/></svg>Calendar</span><span><svg class="ph" aria-hidden="true"><use href="#ph-chart-bar-horizontal"/></svg>Gantt</span></div><span class="ux-chip">Billing revamp</span></div>
+          <div class="kb">
+            <div class="kb-col"><p class="kb-h"><i style="--c:#F2A43C"></i>To Do<em>34</em></p><article class="kb-card"><p class="kb-id"><i class="kb-type bug"></i><b>#TT-8410</b><svg class="ph kb-more" aria-hidden="true"><use href="#ph-dots-three-vertical"/></svg></p><h5>Invoice totals round incorrectly on annual plans</h5><p class="kb-date"><svg class="ph" aria-hidden="true"><use href="#ph-calendar-blank"/></svg>No date</p><div class="kb-foot"><span class="kb-avs"><i style="--h:205">AK</i><i style="--h:160">NK</i></span><span class="kb-cm"><svg class="ph" aria-hidden="true"><use href="#ph-chat-circle"/></svg>0</span><span class="kb-pri medium"><svg class="ph" aria-hidden="true"><use href="#ph-equals"/></svg>Medium</span></div></article><article class="kb-card"><p class="kb-id"><i class="kb-type task"></i><span class="kb-par">#TT-8334 <svg class="ph" aria-hidden="true"><use href="#ph-arrow-elbow-down-right"/></svg></span><b>#TT-8405</b><svg class="ph kb-more" aria-hidden="true"><use href="#ph-dots-three-vertical"/></svg></p><h5>Role-based permissions for custom billing fields</h5><p class="kb-date"><svg class="ph" aria-hidden="true"><use href="#ph-calendar-blank"/></svg>Mon, 07:00 PM</p><div class="kb-foot"><span class="kb-avs"><i style="--h:30">RM</i></span><span class="kb-cm"><svg class="ph" aria-hidden="true"><use href="#ph-chat-circle"/></svg>2</span><span class="kb-pri high"><svg class="ph" aria-hidden="true"><use href="#ph-arrow-up"/></svg>High</span></div></article></div>
+            <div class="kb-col"><p class="kb-h"><i style="--c:#4CC2F0"></i>In Progress<em>93</em></p><article class="kb-card"><p class="kb-id"><i class="kb-type task"></i><span class="kb-par">#TT-8193 <svg class="ph" aria-hidden="true"><use href="#ph-arrow-elbow-down-right"/></svg></span><b>#TT-8408</b><svg class="ph kb-more" aria-hidden="true"><use href="#ph-dots-three-vertical"/></svg></p><h5>Payout reconciliation job for multi-currency</h5><p class="kb-date"><svg class="ph" aria-hidden="true"><use href="#ph-calendar-blank"/></svg>Thu, 07:00 PM</p><div class="kb-foot"><span class="kb-avs"><i style="--h:280">KS</i></span><span class="kb-cm"><svg class="ph" aria-hidden="true"><use href="#ph-chat-circle"/></svg>1</span><span class="kb-pri high"><svg class="ph" aria-hidden="true"><use href="#ph-arrow-up"/></svg>High</span></div></article><article class="kb-card"><p class="kb-id"><i class="kb-type task"></i><b>#TT-8396</b><svg class="ph kb-more" aria-hidden="true"><use href="#ph-dots-three-vertical"/></svg></p><h5>Billing export &mdash; scheduled CSV delivery</h5><p class="kb-date"><svg class="ph" aria-hidden="true"><use href="#ph-calendar-blank"/></svg>No date</p><div class="kb-foot"><span class="kb-avs"><i style="--h:160">NK</i><i style="--h:205">AK</i></span><span class="kb-cm"><svg class="ph" aria-hidden="true"><use href="#ph-chat-circle"/></svg>0</span></div></article></div>
+            <div class="kb-col"><p class="kb-h"><i style="--c:#9B6BFF"></i>Ready for Testing<em>53</em></p><article class="kb-card"><p class="kb-id"><i class="kb-type task"></i><b>#TT-8378</b><svg class="ph kb-more" aria-hidden="true"><use href="#ph-dots-three-vertical"/></svg></p><h5>Usage alerts API for the admin dashboard</h5><p class="kb-date"><svg class="ph" aria-hidden="true"><use href="#ph-calendar-blank"/></svg>Fri, 07:00 PM</p><div class="kb-foot"><span class="kb-avs"><i style="--h:205">AK</i></span><span class="kb-cm"><svg class="ph" aria-hidden="true"><use href="#ph-chat-circle"/></svg>1</span><span class="kb-pri high"><svg class="ph" aria-hidden="true"><use href="#ph-arrow-up"/></svg>High</span></div><span class="kb-tag ok">Done</span></article></div>
+          </div>
+        </div>
+      </div>
+      <div class="life-panel" data-stage="03 Monitor" role="tabpanel" id="lp-2" aria-labelledby="lt-2" hidden>
+        <div class="lp-copy"><p class="mod">User activity monitoring</p><h3>Watch activity and progress in real time</h3><p>TeamTrace’s user activity monitoring software shows what is actually happening on a screen right now — the applications in use, the URLs visited, and the session timeline behind them.</p></div>
+        <div class="lp-vis glass ux ux-eng">
+          <div class="ux-bar"><div class="ux-who"><i class="av" style="--h:205">AK</i><b>Alex K.</b><span class="live"><i></i>Live</span></div><span class="ux-chip">Today</span></div>
+          <div class="eng-kpis"><div><small>Check in</small><b>09:02 AM</b></div><div><small>Active time</small><b>5h 48m</b></div><div><small>Average activity</small><b>78%</b></div></div>
+          <div class="now"><span class="app">VS Code</span><span>billing-export / routes.ts</span><b class="tick" id="live-tick">00:24:12</b></div>
+          <div class="eng-rows">
+            <div class="eng-row"><span>09&ndash;10 AM</span><div class="eng-seg"><i class="f" style="flex:34"></i><i class="a" style="flex:14"></i><i class="i" style="flex:4"></i><i class="f" style="flex:8"></i></div></div>
+            <div class="eng-row"><span>10&ndash;11 AM</span><div class="eng-seg"><i class="a" style="flex:6"></i><i class="f" style="flex:22"></i><i class="i" style="flex:5"></i><i class="a" style="flex:9"></i><i class="b" style="flex:8"></i><i class="f" style="flex:10"></i></div></div>
+            <div class="eng-row"><span>11&ndash;12 PM</span><div class="eng-seg"><i class="f" style="flex:28"></i><i class="a" style="flex:12"></i><i class="i" style="flex:7"></i><i class="f" style="flex:13"></i></div></div>
+            <div class="eng-row"><span>12&ndash;01 PM</span><div class="eng-seg"><i class="a" style="flex:14"></i><i class="b" style="flex:30"></i><i class="a" style="flex:16"></i></div></div>
+          </div>
+          <div class="eng-min"><p><b>11:00 AM &ndash; 12:00 PM</b><span>minute breakdown</span><em><svg class="ph" aria-hidden="true"><use href="#ph-pulse"/></svg>Activity 84%</em></p>
+            <div class="eng-seg blocks"><i class="a"></i><i class="f"></i><i class="f"></i><i class="a"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="i"></i><i class="f"></i><i class="f"></i><i class="a"></i><i class="a"></i></div>
+            <div class="eng-axis"><span>0</span><span>15</span><span>30</span><span>45</span><span>60</span></div></div>
+          <div class="ux-leg"><span><i class="f"></i>Focused</span><span><i class="a"></i>Active</span><span><i class="i"></i>Idle</span><span><i class="b"></i>Break</span></div>
+        </div>
+      </div>
+      <div class="life-panel" data-stage="04 Measure" role="tabpanel" id="lp-3" aria-labelledby="lt-3" hidden>
+        <div class="lp-copy"><p class="mod">Productivity management</p><h3>Measure whether the work landed — and what it cost</h3><p>Was the work completed in time? Were more hours needed than planned? Productivity management turns the activity trail into focus, deep work, shallow hours and on-time delivery.</p></div>
+        <div class="lp-vis glass ux ux-ov">
+          <div class="ux-bar"><div class="ux-tabs"><span class="on"><svg class="ph" aria-hidden="true"><use href="#ph-eye"/></svg>Overview</span><span><svg class="ph" aria-hidden="true"><use href="#ph-monitor"/></svg>Screenshots</span><span><svg class="ph" aria-hidden="true"><use href="#ph-browsers"/></svg>Apps</span><span><svg class="ph" aria-hidden="true"><use href="#ph-pulse"/></svg>Activity</span></div><span class="ux-chip">Last week</span></div>
+          <div class="ov-kpis"><div><small>Work hours</small><b>38h 12m</b></div><div><small>On-time delivery</small><b>82%</b></div><div><small>Idle</small><b>3h 02m</b></div><div><small>Breaks</small><b>2h 12m</b></div></div>
+          <div class="ov-grid">
+            <div class="ov-card"><p class="ov-h"><b>Work hours</b><span class="ux-leg"><span><i class="me"></i>Alex</span><span><i class="dep"></i>Department</span></span></p>
+              <div class="ov-chart"><div class="ov-y"><span>10h</span><span>5h</span><span>0h</span></div><div class="ov-bars"><span><i class="me" style="--h:80%" title="Alex 8.0h"></i><i class="dep" style="--h:74%" title="Department 7.4h"></i></span><span><i class="me" style="--h:89%" title="Alex 8.9h"></i><i class="dep" style="--h:81%" title="Department 8.1h"></i></span><span><i class="me" style="--h:84%" title="Alex 8.4h"></i><i class="dep" style="--h:83%" title="Department 8.3h"></i></span><span><i class="me" style="--h:62%" title="Alex 6.2h"></i><i class="dep" style="--h:76%" title="Department 7.6h"></i></span><span><i class="me" style="--h:67%" title="Alex 6.7h"></i><i class="dep" style="--h:79%" title="Department 7.9h"></i></span></div></div>
+              <div class="ov-x"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span></div></div>
+            <div class="ov-card"><p class="ov-h"><b>Work summary</b></p>
+              <div class="ov-donut"><div class="ov-ring"><b>88%</b><small>active</small></div>
+              <ul><li><i class="act"></i>Active<b>38h 12m</b></li><li><i class="brk"></i>Break<b>2h 12m</b></li><li><i class="idl"></i>Idle<b>3h 02m</b></li></ul></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="life-panel" data-stage="05 Investigate" role="tabpanel" id="lp-4" aria-labelledby="lt-4" hidden>
+        <div class="lp-copy"><p class="mod">Employee monitoring</p><h3>Find out why the number moved</h3><p>Why did task B take so long? Why did James overshoot the deadline? Employee monitoring software breaks a metric into the drivers behind it — and surfaces the warning signals worth acting on.</p></div>
+        <div class="lp-vis glass">
+          <div class="vh"><b>Why did task B take 9h longer?</b></div>
+          <div class="drv"><span>Waiting on code review</span><div class="bar"><i style="width:78%;background:#F2A43C"></i></div><em>+4.1h</em></div>
+          <div class="drv"><span>Context switching</span><div class="bar"><i style="width:52%;background:#3A63FF"></i></div><em>+2.7h</em></div>
+          <div class="drv"><span>Unplanned meetings</span><div class="bar"><i style="width:40%;background:#3A63FF"></i></div><em>+2.2h</em></div>
+          <p class="warn"><i></i>Warning signal: James has 3 tasks past their ETA this week</p>
+        </div>
+      </div>
+    </div>
+    <div class="life-progress" aria-hidden="true"><span id="life-step">1</span> of 5<i></i>Keep scrolling</div>
+    </div>
+   </div>
+  </div>
+</section>
+
+<!-- ============ QUESTIONS ============ -->
+<section class="sec qs" id="platform" aria-labelledby="qs-title">
+  <div class="wrap">
+    <div class="sec-head center qs-head">
+      <h2 id="qs-title" class="h2 ink">Who is working. What is happening. Why.</h2>
+      <p class="qs-sub">Every question about your workforce, answered on one platform.</p>
+      <p class="lede">Productivity management gives you the what. Employee monitoring gives you the why. Insider risk monitoring tells you when to step in. The project, time, resource and analytics modules answer the where, how long, who and how, all on the same data.</p>
+    </div>
+    <div class="qs-grid">
+      <div class="qs-list" role="tablist" aria-label="Questions" id="qs-list"></div>
+      <div class="qs-panel glass" role="tabpanel" id="qs-panel" aria-labelledby="qt-0">
+        <p class="qs-tag" id="qs-tag">Productivity Management</p>
+        <p id="qs-body"></p>
+        <div class="db ux" id="qs-dash" aria-label="Sample dashboard"></div>
+        <a class="qs-link" id="qs-link" href="#"></a>
+      </div>
+    </div>
+    <div class="notes">
+      <p class="note blue"><i aria-hidden="true"></i><span><b>Start with one module. Add the rest when you are ready.</b> Every module shares the same data, so nothing is set up twice and every number matches.</span></p>
+      <p class="note green"><i aria-hidden="true"></i><span><b>Monitoring to coaching.</b> TeamTrace tracks productivity drift as closely as it tracks overwork.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BARBELL ============ -->
+<section class="sec bb" id="barbell" aria-labelledby="bb-title">
+  <div class="wrap">
+    <div class="sec-head center">
+      <p class="label">The barbell problem</p>
+      <h2 id="bb-title" class="h2 ink">Your workforce has two extremes. Most tools only see one.</h2>
+      <p class="lede">Every team has both ends — people running on fumes, and people quietly coasting. TeamTrace plots every person on the barbell, flags employee burnout and disengagement early, and shows you which playbook fits.</p>
+    </div>
+    <div class="bb-cards">
+      <article class="bb-card burn"><h3>One end burns out</h3><p>Part of your team is running on fumes — too many meetings, weekend pings, context they cannot shake. The people doing the most work are the most at risk.</p></article>
+      <article class="bb-card drift"><h3>The other end drifts</h3><p>Another part is invisible — quiet quitting, long lunches, focus blocks that never actually start. By the time you notice, they have already accepted another offer.</p></article>
+      <article class="bb-card one"><h3>Most tools only see one end</h3><p>Activity trackers punish the deep worker to catch the coasting one. Wellbeing apps protect the burned-out and ignore the disengaged. Both ends need different interventions.</p></article>
+    </div>
+    <div class="bb-stage-wrap">
+      <div class="bb-stage" id="bb-stage">
+        <div class="bb2-head"><p class="bb2-k">Team overview · 12 people</p><p class="bb2-sub">Four people over-worked, four balanced, four under-engaged. Select a person on the barbell to see the signals behind their position and the playbook TeamTrace prescribes.</p></div>
+      </div>
+      <aside class="bb-person glass" aria-live="polite">
+        <p class="demo">Demo data</p>
+        <div class="bp-head"><h3 id="bp-name">Arjun M.</h3><span class="pos" id="bp-pos">Burnout risk</span></div>
+        <p class="bp-l">Signals</p><ul id="bp-sig"></ul>
+        <p class="bp-l">TeamTrace playbook</p><ul id="bp-play" class="play"></ul>
+      </aside>
+    </div>
+    <div class="bb-cols">
+      <div class="bb-col burn">
+        <p class="end">Over-worked end</p><h3>Burnout signals</h3>
+        <ul><li><b>↑</b>After-hours load: &gt;20h/month</li><li><b>↑</b>Weekend pings: 3+ in 4 weeks</li><li><b>↑</b>Meeting density: &gt;60% of week</li><li><b>↓</b>Focus decay: −30% over 6 weeks</li><li><b>↓</b>Break skipping: 4+ days running</li></ul>
+        <div class="iv"><p>TeamTrace intervention</p><span>Auto break reminders · After-hours boundary guard · Lead 1:1 prompt when sustained 3+ weeks. Never surveillance.</span></div>
+      </div>
+      <div class="bb-col drift">
+        <p class="end">Under-engaged end</p><h3>Drift signals</h3>
+        <ul><li><b>↓</b>Deep work hours: &lt;8h/week</li><li><b>↓</b>Standup attendance: 2 of last 5</li><li><b>↓</b>Output: −50% from baseline</li><li><b>↑</b>Focus blocks with no tracked work</li><li><b>↑</b>Calendar ghosting: 1:1s canceled repeatedly</li></ul>
+        <div class="iv"><p>TeamTrace intervention</p><span>Gentle re-engagement nudge · Anonymous blockers surfaced to lead · Individual data only with employee consent. Never surveillance.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTEGRATIONS ============ -->
+<section class="sec ints" id="integrations" aria-labelledby="ints-title">
+  <div class="wrap">
+    <div class="sec-head center">
+      <h2 id="ints-title" class="h2 ink">Connect the stack you already run</h2>
+      <p class="lede">33 integrations across 8 categories. TeamTrace’s workforce management software reads from the tools your teams already work in.</p>
+    </div>
+    <!-- "Learn more" goes to the integrations page (link to be set when that page exists) -->
+    <div class="ints-cta"><a class="btn btn-ghost" href="#">Learn more <svg class="ph" aria-hidden="true"><use href="#ph-arrow-right"/></svg></a></div>
+  </div>
+</section>
+
+<!-- ============ SILOED -> UNIFIED ============ -->
+<section class="sec silo" id="consolidation" aria-labelledby="silo-title">
+  <div class="wrap">
+    <div class="sec-head center">
+      <h2 id="silo-title" class="h2 ink">Data that was siloed becomes one trace</h2>
+      <p class="lede">Most productivity tooling is excellent at one individual and blind to the organization. Once the stack is consolidated, the record is finally unified — TeamTrace’s workforce management software brings four disconnected systems into one platform.</p>
+      <div class="seg silo-seg" role="group" aria-label="View">
+        <button type="button" data-silo="0" aria-pressed="true">Siloed today</button>
+        <button type="button" data-silo="1" aria-pressed="false">Unified in TeamTrace</button>
+      </div>
+    </div>
+    <div class="circ" id="silo" data-state="0">
+      <svg class="circ-svg" id="circ-svg" viewBox="0 0 1200 640" aria-hidden="true"></svg>
+      <div class="cn src" style="--x:300;--y:130;--dx:-1;--dy:-1"><svg class="ph" aria-hidden="true"><use href="#ph-kanban-light"/></svg><span>Project &amp; task management</span></div>
+      <div class="cn src" style="--x:300;--y:510;--dx:-1;--dy:1"><svg class="ph" aria-hidden="true"><use href="#ph-users-three-light"/></svg><span>Resource management</span></div>
+      <div class="cn src" style="--x:900;--y:130;--dx:1;--dy:-1"><svg class="ph" aria-hidden="true"><use href="#ph-timer-light"/></svg><span>Time tracking</span></div>
+      <div class="cn src" style="--x:900;--y:510;--dx:1;--dy:1"><svg class="ph" aria-hidden="true"><use href="#ph-gauge-light"/></svg><span>Productivity management</span></div>
+      <div class="cn hub" style="--x:600;--y:320;--dx:0;--dy:0"><i class="hub-glow" aria-hidden="true"></i><span class="hub-face silo"><span class="hub-ico"><svg class="ph" aria-hidden="true"><use href="#ph-table-light"/></svg><svg class="ph x" aria-hidden="true"><use href="#ph-x-circle-fill"/></svg></span><b>Manual join</b><small>Spreadsheets, exports and email</small></span><span class="hub-face uni"><img src="data:image/png;base64,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" alt="" width="64" height="65"><b>TeamTrace</b><small>One record</small></span></div>
+      <div class="cn out" style="--x:140;--y:320;--dx:-1.4;--dy:0"><p>Organization productivity</p><b data-u="68" data-suf=" focus index">— unknown —</b><span data-a="No system holds the total picture" data-b="One metric system across every department">No system holds the total picture</span></div>
+      <div class="cn out" style="--x:1060;--y:320;--dx:1.4;--dy:0"><p>On-time delivery</p><b data-u="82" data-suf="% on time">— unknown —</b><span data-a="Planned hours and actual hours live apart" data-b="Planned and actual hours, finally comparable">Planned hours and actual hours live apart</span></div>
+    </div>
+    <p class="silo-status" id="silo-status" aria-live="polite">Four systems. Zero shared context. · Every answer requires a manual join</p>
+    <ol class="silo-points">
+      <li><span>01</span><h3>Individual, not organization</h3><p>Plenty of tools are good at tracking an individual. Far fewer can track and improve the productivity of the organization as a whole.</p></li>
+      <li><span>02</span><h3>Siloed by default</h3><p>Project and task management, resource management software, time tracking and productivity platforms each hold part of the truth — and none of them talk.</p></li>
+      <li><span>03</span><h3>Unified by TeamTrace</h3><p>All four become part of a single platform, giving visibility into the organization rather than just the individual in front of you.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ TRACEAI MEMORY ============ -->
+<section class="sec mem" id="traceai" aria-labelledby="mem-title">
+  <div class="wrap">
+    <div class="sec-head center">
+      <h2 id="mem-title" class="h2 ink">TraceAI that works harder for you every passing day</h2>
+      <p class="lede">The more your people use TeamTrace, the more it learns — your patterns, your drift, your warning signs — and the more precisely it can prescribe what to do next.</p>
+    </div>
+    <div class="mem-grid">
+      <div class="mem-copy">
+        <h3>Your organization gets its own memory.</h3>
+        <p>When you sign up, TraceAI creates a separate memory for your organization. Nothing leaks between tenants. Every day of usage sharpens it — until it can spot productivity drift before anyone complains, flag warning signs early, and prescribe remedial measures your own team will actually accept.</p>
+        <ul class="facts">
+          <li><span class="fi-ic"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-database-light"/></svg></span><span><b>One memory per organization</b>Created on sign-up, never shared, never pooled with another tenant.</span></li>
+          <li><span class="fi-ic"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-brain-light"/></svg></span><span><b>Learns from usage</b>Patterns come from how your team actually works — not from a static rulebook written for everyone else.</span></li>
+          <li><span class="fi-ic"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-list-checks-light"/></svg></span><span><b>Prescribes, not just reports</b>Every signal arrives with the remedial measure attached — never a metric with no next step.</span></li>
+        </ul>
+      </div>
+      <div class="mem-vis glass">
+        <div class="mem-top"><span class="lock" aria-hidden="true"><svg class="ph" aria-hidden="true"><use href="#ph-lock-simple"/></svg></span><b>Your organization’s memory</b></div>
+        <div class="mem-orb" id="mem-orb"><canvas id="mem-canvas" aria-hidden="true"></canvas></div>
+        <label class="mem-slider"><span>Days of usage: <b id="mem-day">1</b></span><input type="range" id="mem-range" min="1" max="180" value="1"></label>
+        <div class="mem-out" id="mem-out" aria-live="polite"><p class="st" id="mem-st">Learning your patterns</p><p id="mem-txt">Not enough history yet. Collecting how your teams actually work.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ANALYTICS ============ -->
+<section class="sec alt" id="metrics" aria-labelledby="alt-title">
+  <div class="wrap">
+    <div class="sec-head center">
+      <p class="label">Workforce analytics for managers and leadership</p>
+      <h2 id="alt-title" class="h2 ink">Three dimensions of visibility. One metric system.</h2>
+      <p class="lede">Layered visibility that leadership and managers can act on, built into TeamTrace’s workforce management software — dashboards, analytics and reports at every level, from one person to the whole organization.</p>
+    </div>
+    <!-- altitude switch: picks which dashboard is shown below -->
+    <div class="levels" id="levels" role="group" aria-label="Level of visibility">
+      <span class="lv-pill" id="lv-pill" aria-hidden="true"></span>
+      <button type="button" data-l="3" aria-pressed="true">Individual</button>
+      <button type="button" data-l="2" aria-pressed="false">Team</button>
+      <button type="button" data-l="1" aria-pressed="false">Department</button>
+      <button type="button" data-l="0" aria-pressed="false">Organization-wide</button>
+    </div>
+    <!-- sample analytics dashboard for the selected altitude (rendered by js/home.js) -->
+    <div class="an" id="an">
+      <div class="an-top">
+        <p class="an-title"><span class="sw" aria-hidden="true"></span><span id="an-title">Alex M. <small>· Individual analytics</small></span></p>
+        <div class="an-chips" id="an-chips"></div>
+      </div>
+      <div class="an-body" id="an-body" aria-live="polite"></div>
+    </div>
+    <div class="alt-cols">
+      <div class="alt-col"><h3>Dashboards</h3><p class="in">The surface each role opens on.</p><ul><li><b>Role-based dashboards</b>Built for the person, not the org chart</li><li><b>System dashboards</b>The standard set, out of the box</li><li><b>Custom dashboards</b>Assembled by your own teams</li></ul></div>
+      <div class="alt-col"><h3>Analytics</h3><p class="in">Workforce analytics software with the same metric system at every altitude.</p><ul><li data-l="3"><b>Individual analytics</b>One person, in context</li><li data-l="1 2"><b>Team and department analytics</b>Where the pattern is</li><li data-l="0"><b>Org-wide analytics</b>The whole trace, no sampling</li></ul></div>
+      <div class="alt-col"><h3>Reports</h3><p class="in">How the answer leaves the building.</p><ul><li data-l="0"><b>Macro reports</b>The whole organization, one view</li><li data-l="1 2 3"><b>Drilled-down reports</b>From board to individual</li><li><b>Custom reports</b>Your columns, your cadence</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROFITS ============ -->
+<section class="sec profit" id="roi" aria-labelledby="pf-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="pf-title" class="h2 ink">Where productivity translates into profits</h2>
+      <p class="lede">Implement TeamTrace and watch productivity rise, costs shrink, and results multiply across your organization.</p>
+    </div>
+    <div class="pf-grid">
+      <article class="pf big"><span class="fi-ic pf-ic lg" aria-hidden="true"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-clock-clockwise-light"/></svg></span><b>50 minutes to 2.2 hours</b><h3>more productive work per employee, every day</h3><p>Turning idle time into extra output with no new hires needed.</p></article>
+      <article class="pf"><span class="fi-ic pf-ic" aria-hidden="true"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-browser-light"/></svg></span><b>40–70 minutes</b><h3>less browsing per employee each day</h3><p>Reclaiming nearly an hour for high-value work instead of distractions.</p></article>
+      <article class="pf"><span class="fi-ic pf-ic" aria-hidden="true"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-presentation-chart-light"/></svg></span><b>2.1×</b><h3>jump in managers’ productivity</h3><p>Doubling leadership output without increasing headcount.</p></article>
+      <article class="pf"><span class="fi-ic pf-ic" aria-hidden="true"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-lightning-light"/></svg></span><b>23–35%</b><h3>faster decision-making</h3><p>Slashing delays to speed up project delivery and realize returns sooner.</p></article>
+      <article class="pf"><span class="fi-ic pf-ic" aria-hidden="true"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-coins-light"/></svg></span><b>12–31%</b><h3>more project revenue</h3><p>Converting efficiency gains into direct financial growth and higher returns per project.</p></article>
+      <article class="pf"><span class="fi-ic pf-ic" aria-hidden="true"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-chart-bar-light"/></svg></span><b>2–5%</b><h3>more output company-wide</h3><p>Getting more done with existing resources to improve profit margins.</p></article>
+      <article class="pf"><span class="fi-ic pf-ic" aria-hidden="true"><svg class="ph ph-grad" aria-hidden="true"><use href="#ph-rocket-launch-light"/></svg></span><b>2–3%</b><h3>faster task turnaround</h3><p>Shortening delivery times and capturing value and revenue sooner.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STORIES ============ -->
+<section class="sec stories" id="stories" aria-labelledby="st-title">
+  <div class="wrap">
+    <h2 id="st-title" class="h2 ink">Customer stories</h2>
+    <div class="story-grid">
+      <figure class="story big glass"><blockquote>“We were paying for several tools that together covered maybe half of what we needed. TeamTrace replaced them with one place for tasks, files, leave, and milestones, and within a month our sprints ran smoother with far less admin.”</blockquote><figcaption><i>SS</i><span><b>Sankhadeep S.</b>CEO, DotLinker</span></figcaption></figure>
+      <figure class="story glass"><blockquote>“We believe that TeamTrace has been a crucial tool in optimizing our remote work strategy.”</blockquote><figcaption><i>NB</i><span><b>Nicolas B.</b>Head of IT &amp; Marketing, Kunde LLC</span></figcaption></figure>
+      <figure class="story glass"><blockquote>“The insights provided by the platform have significantly enhanced our ability to assess employee performance.”</blockquote><figcaption><i>RS</i><span><b>Russel S.</b>Operations Manager, Durgan Inc</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST ============ -->
+<section class="sec trust-sec" id="trust" aria-labelledby="tr-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="tr-title" class="h2 ink">Designed for trust</h2>
+      <p class="lede">Workplace monitoring became capable long before it became acceptable. The research is unusually consistent about what closes the gap — and what does not.</p>
+    </div>
+    <div class="tr-grid">
+      <div class="tr"><b>1 in 5</b><p>employees have a great deal of trust that their leaders will use their workplace data responsibly.</p></div>
+      <div class="tr"><b>44% <span>vs</span> 16%</b><p>of employees say workplace monitoring feels reasonable — where it is disclosed, versus where it is not.</p></div>
+      <div class="tr"><b>94 samples</b><p>found no evidence that electronic performance monitoring improves performance — while stress rose regardless of design.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta" id="cta" aria-labelledby="cta-title">
+  <div class="horizon" aria-hidden="true"></div>
+  <div class="flare" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="sec-head center">
+      <h2 id="cta-title" class="h2 ink">See where your work actually stands</h2>
+      <p class="lede">Put TeamTrace’s workforce management software on your own team. Plan, execute, monitor, measure and investigate on one connected platform, with an organization memory that keeps getting sharper.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#">Start free trial</a>
+        <a class="btn btn-ghost" href="#">Book a demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="sec faq" id="faq" aria-labelledby="faq-title">
+  <div class="wrap faq-grid">
+    <div class="faq-side">
+      <h2 id="faq-title" class="h2 ink">Frequently asked questions</h2>
+      <p class="lede">Something else on your mind? <a href="#">Contact us</a>.</p>
+    </div>
+    <div>
+      <details open><summary>Is employee monitoring legal in India?<span class="pm" aria-hidden="true"></span></summary><p class="ans">Generally, yes, when it’s transparent, serves a legitimate business purpose, and employees are properly informed. The DPDP Act 2023 governs how personal data is collected and used, and TeamTrace is DPDP compliant. Check local employment law and take legal advice when you write your monitoring policy.</p></details>
+      <details><summary>Will my team feel spied on?<span class="pm" aria-hidden="true"></span></summary><p class="ans">Not when it’s used the way it’s designed. Share what’s tracked and why, use the data to coach and balance workloads, and let good work speak for itself. Good people would rather be measured on output than judged on who looks busiest.</p></details>
+      <details><summary>How is TeamTrace different from other employee monitoring tools?<span class="pm" aria-hidden="true"></span></summary><p class="ans">Most tools are good at tracking individual productivity but can’t show how the organization performs as a whole, because project, resource, time and productivity data sit in separate platforms. TeamTrace runs all of it as one workforce management software platform, then adds insider risk controls and a built-in PSA, so you can follow an hour from the first plan to the final invoice.</p></details>
+      <details><summary>Does it include time and attendance software?<span class="pm" aria-hidden="true"></span></summary><p class="ans">Yes. Automatic time tracking, timesheets with approvals, clock in and out, shifts, overtime, and leave are all built in.</p></details>
+      <details><summary>How much does it cost?<span class="pm" aria-hidden="true"></span></summary><p class="ans">Plans start at $3 per user per month, across Starter, Express, Professional, and Enterprise tiers. Pay monthly or annually, with no long-term contract. <a href="#">See pricing →</a></p></details>
+      <details><summary>Is there a free trial?<span class="pm" aria-hidden="true"></span></summary><p class="ans">Yes. 7 days with full access.</p></details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<!-- ============================ FOOTER ============================
+     Left rail: social links. Main: product modules, then company links.
+     Columns with more than 4 links collapse behind "Show more" (js/main.js). -->
+<footer class="site-footer">
+  <div class="wrap f-wrap">
+    <aside class="f-rail" aria-label="Social media">
+      <p class="f-rail-label">Follow us</p>
+      <div class="socials">
+        <a href="#" aria-label="Facebook"><svg class="ph" aria-hidden="true"><use href="#ph-facebook-logo"/></svg></a>
+        <a href="#" aria-label="Instagram"><svg class="ph" aria-hidden="true"><use href="#ph-instagram-logo"/></svg></a>
+        <a href="#" aria-label="LinkedIn"><svg class="ph" aria-hidden="true"><use href="#ph-linkedin-logo"/></svg></a>
+        <a href="#" aria-label="YouTube"><svg class="ph" aria-hidden="true"><use href="#ph-youtube-logo"/></svg></a>
+        <a href="#" aria-label="X"><svg class="ph" aria-hidden="true"><use href="#ph-x-logo"/></svg></a>
+      </div>
+    </aside>
+    <div class="f-main">
+      <div class="f-head">
+        <h2 class="f-big">Product</h2>
+        <div class="f-brand">
+          <img src="data:image/png;base64,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" alt="TeamTrace" width="126" height="34">
+        </div>
+      </div>
+      <nav class="f-cols f-product" aria-label="Product">
+          <div class="f-col">
+            <h3>Productivity Management</h3>
+            <ul>
+              <li><a href="#">Productivity Metrics</a></li>
+              <li><a href="#">Productivity Coaching</a></li>
+              <li><a href="#">Integrated Productivity Profile</a></li>
+              <li><a href="#">Productivity Comparator</a></li>
+              <li><a href="#">Hourly Scoring</a></li>
+              <li><a href="#">Wellbeing &amp; Burnout</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h3>Employee Monitoring</h3>
+            <ul>
+              <li><a href="#">Employee Screen Monitoring</a></li>
+              <li><a href="#">User Activity Monitoring</a></li>
+              <li><a href="#">Real-Time Activity Monitoring</a></li>
+              <li><a href="#">Application and website tracking</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h3>Insider Risk Monitoring</h3>
+            <ul>
+              <li><a href="#">Incident Triggered Video Recording</a></li>
+              <li><a href="#">File Activity Monitoring</a></li>
+              <li><a href="#">Keystroke Monitoring</a></li>
+              <li><a href="#">USB and Website Blocking</a></li>
+              <li><a href="#">Compliance &amp; Audit</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h3>Project &amp; Tasks</h3>
+            <ul>
+              <li><a href="#">Kanban &amp; Agile Workflows</a></li>
+              <li><a href="#">Core Project Management Tools</a></li>
+              <li><a href="#">Budget Monitoring</a></li>
+              <li><a href="#">Wiki</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h3>Time Tracking &amp; Attendance</h3>
+            <ul>
+              <li><a href="#">Project, Tasks &amp; Activities Time Tracking</a></li>
+              <li><a href="#">Automated Timesheets</a></li>
+              <li><a href="#">Attendance Tracking</a></li>
+              <li><a href="#">Leave &amp; Time-Off Management</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h3>Resource Management</h3>
+            <ul>
+              <li><a href="#">Employee Scheduling</a></li>
+              <li><a href="#">Resource Allocation &amp; Utilization</a></li>
+              <li><a href="#">Capacity Planning</a></li>
+              <li><a href="#">Skill Matrix &amp; Search</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h3>Workforce Analytics</h3>
+            <ul>
+              <li><a href="#">Analytics - Individual Analytics</a></li>
+              <li><a href="#">Analytics - Team and Department Analytics</a></li>
+              <li><a href="#">Analytics - Org Level Analytics</a></li>
+              <li><a href="#">Dashboards - System Dashboards</a></li>
+              <li><a href="#">Dashboards - Role-based Dashboards</a></li>
+              <li><a href="#">Dashboards - Custom Dashboards</a></li>
+              <li><a href="#">Reports - Macro, Drilled-down &amp; Custom</a></li>
+            </ul>
+          </div>
+      </nav>
+      <div class="f-rule" role="separator"></div>
+      <nav class="f-cols" aria-label="Company">
+          <div class="f-col plain">
+            <h3>Solutions</h3>
+            <ul>
+              <li><a href="#">By Use Case</a></li>
+              <li><a href="#">By Teams &amp; Role</a></li>
+              <li><a href="#">Workforce setup</a></li>
+              <li><a href="#">Industry</a></li>
+              <li><a href="#">By Work Mode</a></li>
+            </ul>
+          </div>
+          <div class="f-col plain">
+            <h3>Resources</h3>
+            <ul>
+              <li><a href="#">Migration Guides</a></li>
+              <li><a href="#">Download Apps</a></li>
+              <li><a href="#">Docs/Guides</a></li>
+              <li><a href="#">Videos</a></li>
+            </ul>
+          </div>
+          <div class="f-col plain">
+            <h3>Explore</h3>
+            <ul>
+              <li><a href="#">Product Tour</a></li>
+              <li><a href="#">TraceAI</a></li>
+              <li><a href="#">Security (Security, Identity, Privacy)</a></li>
+              <li><a href="#">ROI calculator</a></li>
+              <li><a href="#">Customer Stories</a></li>
+              <li><a href="#">Integrations</a></li>
+              <li><a href="#">Hourly Scoring</a></li>
+              <li><a href="#">Dashboards</a></li>
+            </ul>
+          </div>
+          <div class="f-col plain">
+            <h3>Company</h3>
+            <ul>
+              <li><a href="#">Our Story</a></li>
+              <li><a href="#">Mission &amp; Values</a></li>
+              <li><a href="#">Impact</a></li>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Ethics &amp; Policy</a></li>
+            </ul>
+          </div>
+      </nav>
+    </div>
+  </div>
+  <div class="f-bottom">
+    <div class="wrap f-bottom-in">
+      <span>Copyright © 2026 CodeLogicX Technologies Pvt. Ltd. All Rights Reserved.</span>
+      <nav aria-label="Legal"><a href="#">Terms &amp; Conditions</a><a href="#">Privacy Policy</a><a href="#">Refund Policy</a><a href="#">DPDP Compliance</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Scripts: shared site behavior first, then this page's interactions -->
+<script src="js/main.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>

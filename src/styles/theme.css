@@ -1,0 +1,617 @@
+/* =============================================================================
+   TEAMTRACE THEME — the single source of truth for every visual token.
+   -----------------------------------------------------------------------------
+   Layer 1 (:root)          raw values for the active mode (dark).
+   Layer 2 (@theme inline)  semantic Tailwind utilities that point at Layer 1:
+                            bg-background, text-muted, border-border, bg-accent…
+   Layer 3 (@theme)         static scales: fonts, type, radius, spacing,
+                            layout widths, breakpoints, easing.
+
+   Rules
+   - Components use ONLY utilities generated from this file. No raw hex,
+     no rgba() and no arbitrary pixel values in components.
+   - Tailwind's default palette, type scale, tracking, leading, radius,
+     weights, shadows, blur, easing and breakpoints are reset (`initial`),
+     so only TeamTrace tokens exist. (Container sizes are kept: container
+     queries like `@md:` use them.)
+   - Glows and tints derive from the brand colours with color-mix(), so
+     changing e.g. --sky restyles every sky glow too.
+
+   Adding light mode later: add `[data-theme="light"] { …Layer 1 overrides… }`
+   and switch `data-theme` on <html>. No component changes needed.
+   ============================================================================= */
+
+/* ---- Layer 1 · raw values ------------------------------------------------- */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --void: #000000; /* page background */
+  --deep: #0c0c0e; /* raised surface */
+  --popover: #0e0e11; /* menus, readout, flyouts */
+  --card-solid: #121215; /* kanban cards */
+  --hole: #0d0d10; /* donut holes */
+  --pin: #161618; /* barbell pins */
+  --nav-bg: rgb(14 14 16 / 0.94); /* navigation bar */
+  --nav-bg-scrolled: rgb(12 12 14 / 0.97);
+  --menu-bg: #0b0b0d; /* mobile menu panel */
+  --scrim: rgb(0 0 0 / 0.45); /* overlay behind open menus */
+  --scrollbar-thumb: rgb(255 255 255 / 0.16);
+  --scrollbar-thumb-hover: rgb(255 255 255 / 0.28);
+  --avatar-ring: #111114;
+  --after: #3a3a3c;
+
+  /* Text */
+  --text: #f4f4f5;
+  --text-strong: #ffffff;
+  --headline: #f1f4ff;
+  --headline-soft: #c9c9cf;
+  --muted: #a1a1aa;
+  --dim: #71717a;
+
+  /* Lines */
+  --line: rgb(255 255 255 / 0.091);
+  --line-2: rgb(255 255 255 / 0.168);
+  --line-ghost: rgb(255 255 255 / 0.12);
+  --line-ghost-hover: rgb(255 255 255 / 0.22);
+  --line-dashed: rgb(255 255 255 / 0.154);
+
+  /* Brand & status */
+  --volt: #3a63ff;
+  --sky: #4cc2f0;
+  --leaf: #38cc63;
+  --amber: #f2a43c;
+  --coral: #ee6a5e;
+  --violet: #9b6bff;
+  --indigo: #6e78ff;
+  --cyan: #3fe0e0;
+  --periwinkle: #6e8dff;
+  --ultraviolet: #6e5bff;
+  --lavender: #8b7bff;
+  --slate: #5e6a8e;
+  --slate-deep: #2b3352;
+  --break: #4a5170;
+  --idle: rgb(242 164 60 / 0.85); /* idle time in activity charts */
+  --risk: #c9564c;
+  --horizon: #4a7bff;
+
+  /* Light tints (text / accents on dark) */
+  --sky-100: #9fe2ff;
+  --sky-50: #bfeaff;
+  --sky-faint: color-mix(in srgb, var(--sky) 30%, transparent);
+  --volt-100: #9fb2ff;
+  --volt-50: #c9d6ff;
+  --leaf-100: #8ff0b0;
+  --leaf-50: #cff7dc;
+  --amber-100: #ffd9a0;
+  --amber-200: #ffc98a;
+  --coral-100: #ffb4ac;
+  --coral-200: #ff9a8f;
+  --ice: #f4faff; /* orb eyes / speech */
+
+  /* Hue avatars: hsl(var(--h) <these>) — the person's hue comes from data */
+  --avatar-fg: 90% 84%;
+  --avatar-bg: 55% 40% / 0.45;
+  --icon-soft: #dde8ff;
+  --icon-dim: #8c97b7;
+
+  /* Translucent fills */
+  --fill-0: rgb(255 255 255 / 0.012);
+  --fill-1: rgb(255 255 255 / 0.02);
+  --fill-2: rgb(255 255 255 / 0.025);
+  --fill-3: rgb(255 255 255 / 0.03);
+  --fill-4: rgb(255 255 255 / 0.04);
+  --fill-5: rgb(255 255 255 / 0.05);
+  --fill-hover: rgb(255 255 255 / 0.08);
+  --fill-strong: rgb(255 255 255 / 0.14);
+  --track: rgb(255 255 255 / 0.07);
+  --well: rgb(0 0 0 / 0.28);
+  --dot-grid: rgb(255 255 255 / 0.049);
+  --median-line: rgb(255 255 255 / 0.35);
+  --inset-panel: rgb(7 7 9 / 0.55);
+
+  /* Gradients */
+  --grad-ink: linear-gradient(180deg, #ffffff 0%, #d9d9de 55%, #8e8e96 110%);
+  --grad-stat: linear-gradient(180deg, #ffffff, #b4b4bc);
+  --grad-tag: linear-gradient(180deg, #ffffff, #9a9aa3);
+  --grad-footer-title: linear-gradient(180deg, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.06));
+  --grad-glass: linear-gradient(160deg, rgb(44 44 46 / 0.55), rgb(12 12 14 / 0.85) 65%);
+  --grad-node: linear-gradient(160deg, rgb(44 44 46 / 0.6), rgb(12 12 14 / 0.9) 70%);
+  --grad-bar: linear-gradient(180deg, var(--periwinkle), var(--volt));
+  --grad-bar-hi: linear-gradient(180deg, var(--sky-100), var(--sky));
+  --grad-bar-lo: linear-gradient(180deg, var(--slate), var(--slate-deep));
+  --grad-meter: linear-gradient(90deg, var(--sky), var(--volt));
+  --grad-avatar: linear-gradient(135deg, var(--volt), var(--sky));
+  --grad-icon-from: var(--sky-100);
+  --grad-icon-to: var(--periwinkle);
+  --grad-progress: linear-gradient(
+    90deg,
+    var(--violet) 0%,
+    var(--indigo) 28%,
+    var(--cyan) 68%,
+    var(--sky) 100%
+  );
+  --spectrum-stops:
+    var(--coral) 0%, var(--amber) 22%, var(--leaf) 42%, var(--leaf) 58%, var(--sky) 76%,
+    var(--volt) 90%, var(--ultraviolet) 100%;
+  --grad-spectrum: linear-gradient(90deg, var(--spectrum-stops));
+  --grad-rail: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--sky) 6%, transparent),
+    color-mix(in srgb, var(--sky) 0%, transparent) 75%
+  );
+  --grad-spectrum-vertical: linear-gradient(180deg, var(--spectrum-stops));
+  --grad-rule: linear-gradient(90deg, var(--line-2), var(--line) 70%, transparent);
+  --grad-footer-glow: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--sky) 55%, transparent),
+    color-mix(in srgb, var(--violet) 45%, transparent),
+    transparent
+  );
+  --grad-footer-bg: linear-gradient(180deg, rgb(14 14 18 / 0.6), var(--void));
+  --grad-dashboard:
+    radial-gradient(70% 60% at 50% 0%, rgb(255 255 255 / 0.054), transparent 70%),
+    linear-gradient(180deg, rgb(22 22 24 / 0.75), rgb(9 9 11 / 0.92));
+  --grad-featured: radial-gradient(
+    80% 80% at 0% 0%,
+    rgb(255 255 255 / 0.09),
+    rgb(12 12 14 / 0.6) 70%
+  );
+  --grad-selected-row: linear-gradient(90deg, rgb(255 255 255 / 0.042), transparent);
+
+  /* Hero */
+  --grad-hero-glow:
+    radial-gradient(34% 40% at 66% 37%, rgb(255 255 255 / 0.084), transparent 70%),
+    radial-gradient(70% 40% at 60% 100%, rgb(255 255 255 / 0.066), transparent 70%),
+    radial-gradient(
+      30% 30% at 80% 20%,
+      color-mix(in srgb, var(--sky) 10%, transparent),
+      transparent 70%
+    );
+  --grad-hero-glow-mobile: radial-gradient(
+    70% 22rem at 50% 15rem,
+    rgb(255 255 255 / 0.09),
+    transparent 70%
+  );
+  --grad-hero-vignette:
+    radial-gradient(
+      75% 65% at 0% 100%,
+      rgb(0 0 0 / 0.92) 0%,
+      rgb(0 0 0 / 0.55) 45%,
+      transparent 75%
+    ),
+    linear-gradient(180deg, transparent 70%, var(--void) 100%);
+  --grad-hero-vignette-mobile: linear-gradient(180deg, transparent 55%, var(--void) 100%);
+  --text-glow-sky: 0 0 30px color-mix(in srgb, var(--sky) 60%, transparent);
+  --orb-eye-glow: rgb(255 255 255 / 0.595);
+  --orb-eye-halo: color-mix(in srgb, var(--sky) 45%, transparent);
+  --orb-text-glow: rgb(255 255 255 / 0.42);
+
+  /* CTA horizon (a glowing planet edge) */
+  /* The lit rim reaches the circle's edge; a soft rim-coloured shadow
+     (--sh-horizon) blurs that edge, so it never looks stair-stepped. */
+  --grad-horizon: radial-gradient(
+    closest-side,
+    var(--deep) 92%,
+    #1e1e20 98.8%,
+    var(--horizon) 99.7%
+  );
+  --grad-flare: radial-gradient(
+    50% 50% at 50% 50%,
+    rgb(220 235 255 / 0.75),
+    color-mix(in srgb, var(--sky) 25%, transparent) 35%,
+    transparent 70%
+  );
+
+  /* Barbell spectrum */
+  --grad-barbell-stage:
+    radial-gradient(
+      45% 70% at 8% 50%,
+      color-mix(in srgb, var(--coral) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(45% 70% at 92% 50%, rgb(255 255 255 / 0.066), transparent 70%),
+    radial-gradient(
+      35% 50% at 50% 50%,
+      color-mix(in srgb, var(--leaf) 8%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, rgb(22 22 24 / 0.8), rgb(9 9 11 / 0.92));
+  --grad-plate-warm: linear-gradient(180deg, #ff9a7a, var(--coral) 45%, #b8414b);
+  --grad-plate-warm-alt: linear-gradient(180deg, #ffc27a, var(--amber) 45%, #c27420);
+  --grad-plate-cool: linear-gradient(180deg, #7e9bff, var(--volt) 45%, #2236b0);
+  --grad-plate-cool-alt: linear-gradient(180deg, #a58bff, var(--ultraviolet) 45%, #4532c8);
+  --plate-glow-warm: color-mix(in srgb, var(--coral) 80%, transparent);
+  --plate-glow-cool: rgb(255 255 255 / 0.12);
+  --sh-plate: inset 0 1px 0 rgb(255 255 255 / 0.35), inset 0 -14px 24px -12px rgb(0 0 0 / 0.45);
+  --sh-spectrum-bar:
+    inset 0 1px 0 rgb(255 255 255 / 0.45), inset 0 -3px 6px rgb(0 0 0 / 0.25),
+    0 0 28px -4px color-mix(in srgb, var(--sky) 35%, transparent);
+  --pin-gap: rgb(9 9 11 / 0.85);
+  --grad-col-warm: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--coral) 10%, transparent),
+    rgb(12 12 14 / 0.6) 60%
+  );
+  --grad-col-cool: linear-gradient(160deg, rgb(255 255 255 / 0.042), rgb(12 12 14 / 0.6) 60%);
+
+  /* Circuit board */
+  --wire-off: rgb(255 255 255 / 0.112);
+  --wire-on: rgb(255 255 255 / 0.252);
+  --node-border-on: rgb(255 255 255 / 0.35);
+  --grad-hub: radial-gradient(90% 90% at 50% 35%, rgb(52 52 54 / 0.9), rgb(9 9 11 / 0.96) 75%);
+  --grad-node-icon: linear-gradient(180deg, rgb(255 255 255 / 0.105), rgb(18 18 20 / 0.6));
+  --grad-circuit-glow:
+    radial-gradient(38% 46% at 50% 50%, rgb(255 255 255 / 0.066), transparent 70%),
+    radial-gradient(
+      20% 30% at 12% 50%,
+      color-mix(in srgb, var(--sky) 8%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      20% 30% at 88% 50%,
+      color-mix(in srgb, var(--sky) 8%, transparent),
+      transparent 70%
+    );
+  --hub-ring-stops: var(--sky), var(--volt), var(--lavender), var(--leaf), var(--sky);
+
+  /* Voice-orb ring (primary button, active step, AI send).
+     Only the colour stops live here: the gradient itself is built inside the
+     `orb` utility, where the animated --ga angle is in scope. */
+  --orb-ring-stops:
+    var(--violet) 0%, color-mix(in srgb, var(--indigo) 80%, transparent) 12%,
+    rgb(70 90 200 / 0.35) 26%, color-mix(in srgb, var(--cyan) 45%, transparent) 40%,
+    var(--cyan) 55%, color-mix(in srgb, var(--sky) 90%, transparent) 66%, rgb(70 90 200 / 0.35) 80%,
+    color-mix(in srgb, var(--violet) 85%, transparent) 100%;
+  --orb-halo-stops:
+    var(--violet) 0%, var(--indigo) 14%, rgb(90 110 255 / 0) 30%, var(--cyan) 52%, var(--sky) 66%,
+    rgb(90 110 255 / 0) 82%, var(--violet) 100%;
+  /* Soft light the orb materialises out of (intro) */
+  --grad-orb-bloom: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--sky-100) 55%, transparent),
+    color-mix(in srgb, var(--sky) 22%, transparent) 55%,
+    transparent
+  );
+  --orb-core:
+    radial-gradient(
+      70% 95% at 50% 50%,
+      rgb(255 255 255 / 0.11) 0%,
+      rgb(255 255 255 / 0.05) 45%,
+      rgb(255 255 255 / 0) 72%
+    ),
+    linear-gradient(180deg, #222224 0%, #131315 100%);
+
+  /* Shadows */
+  --sh-popover: 0 30px 70px -24px rgb(0 0 0 / 0.95);
+  --sh-readout: 0 24px 60px -30px rgb(0 0 0 / 0.9);
+  --sh-glass: 0 40px 100px -50px rgb(255 255 255 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.06);
+  --sh-inset: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --sh-card: 0 10px 20px -14px rgb(0 0 0 / 0.9);
+  --sh-orb-core: inset 0 0 12px rgb(255 255 255 / 0.175), inset 0 1px 0 rgb(255 255 255 / 0.1);
+  --sh-glow-sky: 0 0 22px -2px color-mix(in srgb, var(--sky) 75%, transparent);
+  --sh-glow-donut: 0 0 40px -12px color-mix(in srgb, var(--sky) 60%, transparent);
+  --sh-ring-sky: 0 0 0 1px color-mix(in srgb, var(--sky) 38%, transparent);
+  --sh-focus-sky:
+    0 0 0 4px color-mix(in srgb, var(--sky) 14%, transparent),
+    0 0 30px -8px color-mix(in srgb, var(--sky) 70%, transparent);
+  --sh-glow-line: 0 0 12px color-mix(in srgb, var(--sky) 70%, transparent);
+  --sh-progress:
+    0 0 10px color-mix(in srgb, var(--indigo) 55%, transparent),
+    0 0 18px color-mix(in srgb, var(--cyan) 25%, transparent);
+  --grad-progress-head: radial-gradient(
+    circle,
+    rgb(255 255 255 / 0.95) 0%,
+    color-mix(in srgb, var(--sky) 60%, transparent) 35%,
+    transparent 70%
+  );
+  --sh-dot: 0 0 10px currentColor; /* glowing status dots (glow = text colour) */
+  --sh-horizon:
+    0 0 3px 0.5px var(--horizon), 0 -1px 6px 0 rgb(255 255 255 / 0.3),
+    0 -20px 80px 10px rgb(255 255 255 / 0.12), 0 -80px 220px 40px rgb(255 255 255 / 0.084);
+}
+
+/* ---- Layer 2 · semantic utilities ----------------------------------------- */
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: var(--text-strong);
+
+  /* Surfaces */
+  --color-background: var(--void);
+  --color-surface: var(--deep);
+  --color-popover: var(--popover);
+  --color-card-solid: var(--card-solid);
+  --color-hole: var(--hole);
+  --color-pin: var(--pin);
+  --color-menu: var(--menu-bg);
+  --color-scrim: var(--scrim);
+  --color-avatar-ring: var(--avatar-ring);
+  --color-after: var(--after);
+
+  /* Text */
+  --color-foreground: var(--text);
+  --color-strong: var(--text-strong);
+  --color-headline: var(--headline);
+  --color-headline-soft: var(--headline-soft);
+  --color-muted: var(--muted);
+  --color-dim: var(--dim);
+
+  /* Lines */
+  --color-border: var(--line);
+  --color-border-strong: var(--line-2);
+  --color-border-ghost: var(--line-ghost);
+  --color-border-ghost-hover: var(--line-ghost-hover);
+  --color-border-dashed: var(--line-dashed);
+  --color-ring: var(--sky);
+
+  /* Semantic brand */
+  --color-accent: var(--sky);
+  --color-danger: var(--coral);
+
+  /* Named palette */
+  --color-volt: var(--volt);
+  --color-sky: var(--sky);
+  --color-leaf: var(--leaf);
+  --color-amber: var(--amber);
+  --color-coral: var(--coral);
+  --color-sky-100: var(--sky-100);
+  --color-sky-50: var(--sky-50);
+  --color-volt-100: var(--volt-100);
+  --color-volt-50: var(--volt-50);
+  --color-leaf-100: var(--leaf-100);
+  --color-leaf-50: var(--leaf-50);
+  --color-amber-100: var(--amber-100);
+  --color-amber-200: var(--amber-200);
+  --color-coral-100: var(--coral-100);
+  --color-coral-200: var(--coral-200);
+  --color-ice: var(--ice);
+  --color-icon-soft: var(--icon-soft);
+  --color-icon-dim: var(--icon-dim);
+
+  /* Fills */
+  --color-fill-0: var(--fill-0);
+  --color-fill-1: var(--fill-1);
+  --color-fill-2: var(--fill-2);
+  --color-fill-3: var(--fill-3);
+  --color-fill-4: var(--fill-4);
+  --color-fill-5: var(--fill-5);
+  --color-fill-hover: var(--fill-hover);
+  --color-fill-strong: var(--fill-strong);
+  --color-wire-off: var(--wire-off);
+  --color-wire-on: var(--wire-on);
+  --color-node-border-on: var(--node-border-on);
+  --color-track: var(--track);
+  --color-well: var(--well);
+  --color-median-line: var(--median-line);
+  --color-inset-panel: var(--inset-panel);
+
+  /* Shadows (Tailwind's defaults are reset) */
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --shadow-popover: var(--sh-popover);
+  --shadow-readout: var(--sh-readout);
+  --shadow-glass: var(--sh-glass);
+  --shadow-inset: var(--sh-inset);
+  --shadow-card: var(--sh-card);
+  --shadow-glow-sky: var(--sh-glow-sky);
+  --shadow-glow-donut: var(--sh-glow-donut);
+  --shadow-ring-sky: var(--sh-ring-sky);
+  --shadow-focus-sky: var(--sh-focus-sky);
+  --shadow-horizon: var(--sh-horizon);
+  --shadow-progress: var(--sh-progress);
+  --shadow-glow-line: var(--sh-glow-line);
+  --shadow-dot: var(--sh-dot);
+  --shadow-spectrum-bar: var(--sh-spectrum-bar);
+  --drop-shadow-glow-sky: 0 0 4px var(--sky);
+
+  /* Font family (variable comes from src/theme/fonts.ts) */
+  --font-sans:
+    var(--font-urbanist), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ---- Layer 3 · static scales ---------------------------------------------- */
+@theme {
+  /* Type scale — fixed sizes (rem, 16px root) */
+  --text-*: initial;
+  --text-5xs: 0.5625rem; /* 9    chart micro labels */
+  --text-4xs: 0.59375rem; /* 9.5  chart axis */
+  --text-3xs: 0.65625rem; /* 10.5 mini UI */
+  --text-2xs: 0.71875rem; /* 11.5 */
+  --text-xs: 0.78125rem; /* 12.5 */
+  --text-sm: 0.84375rem; /* 13.5 */
+  --text-ui: 0.875rem; /* 14   labels, nav, UI text */
+  --text-md: 0.90625rem; /* 14.5 */
+  --text-base: 0.96875rem; /* 15.5 */
+  --text-control: 1rem; /* 16   buttons, card titles */
+  --text-lg: 1.03125rem; /* 16.5 */
+  --text-body: 1.0625rem; /* 17   body copy */
+  --text-body--line-height: 1.6;
+  --text-quote: 1.125rem; /* 18   testimonials */
+  --text-quote--line-height: 1.55;
+  --text-xl: 1.3125rem; /* 21 */
+  --text-xl--line-height: 1.3;
+  --text-2xl: 1.5rem; /* 24 */
+  --text-2xl--line-height: 1.2;
+  --text-3xl: 1.75rem; /* 28 */
+  --text-3xl--line-height: 1.1;
+  --text-gauge: 2.125rem; /* 34   donut centre value */
+  --text-gauge--line-height: 1;
+  --text-stat-sm: 2.375rem; /* 38 */
+  --text-stat-sm--line-height: 1;
+
+  /* Type scale — fluid sizes */
+  --text-kicker: clamp(0.875rem, 1.15vw, 1.0625rem);
+  --text-kicker--line-height: 1.3;
+  --text-lede: clamp(1.0625rem, 1.5vw, 1.25rem);
+  --text-lede--line-height: 1.6;
+  --text-sub: clamp(1.125rem, 1.6vw, 1.375rem);
+  --text-sub--line-height: 1.4;
+  --text-title: clamp(1.125rem, 1.7vw, 1.375rem);
+  --text-title--line-height: 1.35;
+  --text-quote-lg: clamp(1.375rem, 2.2vw, 1.75rem);
+  --text-quote-lg--line-height: 1.4;
+  --text-h3-sm: clamp(1.5rem, 2.4vw, 1.875rem);
+  --text-h3-sm--line-height: 1.15;
+  --text-h3: clamp(1.625rem, 2.8vw, 2.25rem);
+  --text-h3--line-height: 1.1;
+  --text-h3-lg: clamp(1.75rem, 3vw, 2.5rem);
+  --text-h3-lg--line-height: 1.08;
+  --text-stat: clamp(1.875rem, 3vw, 2.625rem);
+  --text-stat--line-height: 1.05;
+  --text-tab: clamp(1.5rem, 2.6vw, 2.125rem);
+  --text-tab--line-height: 1;
+  --text-qs-tag: clamp(2.125rem, 3.5vw, 3.125rem);
+  --text-qs-tag--line-height: 1.05;
+  --text-stat-lg: clamp(2.5rem, 4.4vw, 3.75rem);
+  --text-stat-lg--line-height: 1;
+  --text-stat-xl: clamp(2.75rem, 5.4vw, 4.75rem);
+  --text-stat-xl--line-height: 1;
+  --text-h2: clamp(2.25rem, 4.8vw, 4.125rem);
+  --text-h2--line-height: 1.02;
+  --text-display: clamp(2.625rem, 5vw, 4.75rem);
+  --text-display--line-height: 1.02;
+  --text-footer-big: clamp(2.75rem, 5vw, 4.5rem);
+  --text-footer-big--line-height: 0.95;
+
+  /* Letter spacing */
+  --tracking-*: initial;
+  --tracking-tightest: -0.045em;
+  --tracking-tighter: -0.04em;
+  --tracking-tight: -0.03em;
+  --tracking-snug: -0.02em;
+  --tracking-slight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-label: 0.01em;
+
+  /* Line heights */
+  --leading-*: initial;
+  --leading-none: 1;
+  --leading-display: 1.02;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.55;
+
+  /* Font weights (Urbanist is variable, so any weight renders) */
+  --font-weight-*: initial;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-body: 450;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Radius */
+  --radius-*: initial;
+  --radius-2xs: 0.1875rem; /* 3  chart bars, swatches */
+  --radius-xs: 0.25rem; /* 4  */
+  --radius-sm: 0.375rem; /* 6  */
+  --radius-md: 0.625rem; /* 10 */
+  --radius-lg: 0.75rem; /* 12 */
+  --radius-xl: 0.875rem; /* 14 */
+  --radius-2xl: 1.125rem; /* 18 */
+  --radius-card: 1.375rem; /* 22 */
+  --radius-glass: 1.5rem; /* 24 */
+  --radius-3xl: 1.625rem; /* 26 */
+  --radius-frame: 1.75rem; /* 28 */
+  --radius-full: 9999px;
+
+  /* Spacing: 4px base unit (p-4 = 16px), plus named layout spacing */
+  --spacing: 0.25rem;
+  --spacing-gutter: 1.5rem; /* page side gutter */
+  --spacing-section: clamp(5rem, 9vw, 8.125rem); /* py-section */
+  --spacing-cta-top: clamp(6.25rem, 11vw, 10rem);
+  --spacing-cta-bottom: clamp(13.75rem, 26vw, 20.625rem);
+  --spacing-nav: 6.5rem; /* fixed-nav offset for anchors */
+  --spacing-head-gap: 1.375rem; /* section header gap */
+  --spacing-pin: 5.25rem; /* top offset of pinned (sticky) stages */
+
+  /* Layout widths */
+  --container-page: 77.5rem; /* 1240 */
+  --container-head: 53.75rem; /* 860 */
+  --container-hero: 51.25rem; /* 820 */
+  --container-lede: 34em;
+  --container-lede-wide: 44em;
+  --container-prose: 42em;
+  --container-readout: 23.125rem; /* 370 */
+
+  /* Breakpoints (mobile-first, min-width) */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 35rem; /* 560  */
+  --breakpoint-md: 47.5rem; /* 760  */
+  --breakpoint-lg: 56.25rem; /* 900  */
+  --breakpoint-xl: 61.25rem; /* 980  */
+  --breakpoint-nav: 66.25rem; /* 1060 desktop navigation */
+  --breakpoint-2xl: 77.5rem; /* 1240 */
+
+  /* Blur */
+  --blur-*: initial;
+  --blur-xs: 0.25rem;
+  --blur-sm: 0.625rem;
+  --blur-scrim: 0.625rem; /* backdrop-blur-scrim: page behind open menus */
+
+  /* Easing */
+  --ease-*: initial;
+  --ease-brand: cubic-bezier(0.22, 0.8, 0.24, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Entry animations (replay whenever the element mounts) */
+  --animate-grow-y: grow-y 0.8s var(--ease-brand) both;
+  --animate-grow-x: grow-x 0.7s var(--ease-brand) both;
+  --animate-spin-in: spin-in 0.9s var(--ease-brand) both;
+  --animate-blur-in: blur-in 0.5s var(--ease-brand) both;
+  --animate-draw: draw 1.1s var(--ease-brand) both;
+  --animate-needle: needle 1s var(--ease-brand) both;
+  @keyframes grow-y {
+    from {
+      transform: scaleY(0);
+    }
+  }
+  @keyframes grow-x {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  @keyframes spin-in {
+    from {
+      opacity: 0;
+      transform: rotate(-90deg) scale(0.9);
+    }
+  }
+  @keyframes blur-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(6px);
+    }
+  }
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 400;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes needle {
+    from {
+      rotate: 180deg;
+    }
+  }
+
+  /* Looping animations */
+  --animate-pulse-dot: pulse-dot 0.9s ease-in-out infinite alternate;
+  --animate-spin-fast: spin 0.7s linear infinite;
+  @keyframes pulse-dot {
+    to {
+      transform: scale(0.55);
+      opacity: 0.6;
+    }
+  }
+}

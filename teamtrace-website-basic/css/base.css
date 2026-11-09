@@ -1,0 +1,456 @@
+/* ==========================================================================
+   TeamTrace — base.css
+   Shared foundation for every page of the TeamTrace website.
+
+   Load this file on EVERY page, before the page's own stylesheet:
+     <link rel="stylesheet" href="css/base.css">
+     <link rel="stylesheet" href="css/home.css">   <- page-specific
+
+   CONTENTS
+     1.  Design tokens (colors, layout, font, easing)
+     2.  Reset & global elements (incl. icons)
+     3.  Typography
+     4.  Buttons (base, ghost, primary "voice-orb")
+     5.  Navigation (bar, dropdowns, Solutions flyout, mobile panel)
+     6.  Sections & section headings
+     7.  Shared components (label, glass card, kicker, trust chips, CTA row)
+     8.  CTA horizon (closing call-to-action band)
+     9.  FAQ (accordion)
+     10. Footer
+     11. Accessibility: reduced motion
+     12. Scroll progress bar
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Design tokens
+   Brand colors, layout width, font stack and easing.
+   Change values here to restyle the whole site.
+   ========================================================================== */
+
+:root{
+  --void:#000000;
+  --deep:#0C0C0E;
+  --panel:#121214;
+  --line:rgba(255,255,255,0.091);
+  --line-2:rgba(255,255,255,0.168);
+  --text:#F4F4F5;
+  --muted:#A1A1AA;
+  --dim:#71717A;
+  --volt:#3A63FF;
+  --sky:#4CC2F0;
+  --leaf:#38CC63;
+  --amber:#F2A43C;
+  --coral:#EE6A5E;
+  --after:#3A3A3C;
+  --wrap:1240px;
+  --font:"Urbanist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ease:cubic-bezier(.22,.8,.24,1);
+}
+
+/* ==========================================================================
+   2. Reset & global elements
+   ========================================================================== */
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--void)}
+body{margin:0;background:var(--void);color:var(--text);font-family:var(--font);font-size:17px;font-weight:450;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--sky);outline-offset:3px;border-radius:8px}
+
+/* ---------- Icons ----------
+   Phosphor icons from the sprite in js/icons.js:
+   <svg class="ph" aria-hidden="true"><use href="#ph-NAME"/></svg>
+   They take the text color; size them with width/height (default 1em). */
+.ph{display:block;flex:none;width:1em;height:1em;fill:currentColor}
+/* brand gradient fill (sky to blue) instead of a flat color */
+.ph-grad{fill:url(#ph-grad)}
+
+/* ---------- Layout & utility helpers ---------- */
+
+/* centred page container */
+.wrap{width:min(var(--wrap),100% - 48px);margin-inline:auto}
+[hidden]{display:none!important}
+/* visually hidden, still read by screen readers */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ==========================================================================
+   3. Typography
+   ========================================================================== */
+
+h1,h2,h3{margin:0;font-weight:300;letter-spacing:-.03em;line-height:1.02}
+.display{font-size:clamp(42px,5vw,76px);line-height:1.02;letter-spacing:-.045em}
+.h2{font-size:clamp(36px,4.8vw,66px)}
+.ink{background:linear-gradient(180deg,#FFFFFF 0%,#D9D9DE 55%,#8E8E96 110%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.14em;margin-bottom:-.14em}
+.lede{font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:34em;margin:0}
+p{margin:0}
+/* headings never leave a single orphan word on its own line */
+h1,h2,h3{text-wrap:balance}
+
+/* ==========================================================================
+   4. Buttons
+   Usage: <a class="btn btn-primary">, <a class="btn btn-ghost">, add .btn-sm for the compact size.
+   ========================================================================== */
+
+/* ---------- Animated custom properties used by the voice-orb buttons (also used on page elements) ---------- */
+
+/* --ga: rotation angle of the conic light ring */
+@property --ga{syntax:"<angle>";inherits:false;initial-value:0deg}
+/* --pg: 0 to 1 'breathing' value for the halo */
+@property --pg{syntax:"<number>";inherits:false;initial-value:0}
+@keyframes gaspin{to{--ga:360deg}}
+@keyframes orbBreath{0%,100%{--pg:0}50%{--pg:1}}
+
+/* ---------- Base button ---------- */
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55em;min-height:52px;padding:0 26px;border-radius:999px;font:600 16px/1 var(--font);letter-spacing:.005em;text-decoration:none;cursor:pointer;border:1px solid transparent;transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .25s,border-color .25s;white-space:nowrap}
+.btn-sm{min-height:44px;padding:0 18px;font-size:15px}
+
+/* ---------- Ghost button: flat, translucent fill ---------- */
+
+.btn-ghost{position:relative;isolation:isolate;color:var(--text);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .35s}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22)}
+
+/* ---------- Primary button: the voice-orb look ---------- */
+
+/* Layers, back to front: the turning light ring (button background) > a soft blurred
+   halo of the same arcs (::after) > the deep core with its faint inner disc (::before) > the label */
+/* !important keeps the finish when the button sits inside styled link lists (e.g. .mobile-panel a) */
+.btn-primary{position:relative;isolation:isolate;color:#fff!important;border:0!important;
+  background:conic-gradient(from var(--ga),rgba(155,107,255,1) 0%,rgba(110,120,255,.8) 12%,rgba(70,90,200,.35) 26%,rgba(63,224,224,.45) 40%,rgba(63,224,224,1) 55%,rgba(76,194,240,.9) 66%,rgba(70,90,200,.35) 80%,rgba(155,107,255,.85) 100%)!important;box-shadow:none!important;
+  animation:gaspin 4.5s linear infinite;text-shadow:0 0 14px rgba(255,255,255,0.315)}
+/* deep core */
+.btn-primary::before{content:"";position:absolute;inset:2.5px;border-radius:inherit;z-index:-1;pointer-events:none;
+  background:radial-gradient(70% 95% at 50% 50%,rgba(255,255,255,.11) 0%,rgba(255,255,255,.05) 45%,rgba(255,255,255,0) 72%),linear-gradient(180deg,#222224 0%,#131315 100%);
+  box-shadow:inset 0 0 12px rgba(255,255,255,0.175),inset 0 1px 0 rgba(255,255,255,.1)}
+/* blurred, breathing halo */
+.btn-primary::after{content:"";position:absolute;inset:-2px;border-radius:inherit;z-index:-2;pointer-events:none;
+  background:conic-gradient(from var(--ga),#9B6BFF 0%,#6E78FF 14%,rgba(90,110,255,0) 30%,#3FE0E0 52%,#4CC2F0 66%,rgba(90,110,255,0) 82%,#9B6BFF 100%);
+  filter:blur(9px);opacity:calc(.32 + var(--pg)*.22);transform:scale(calc(1 + var(--pg)*.03));
+  animation:gaspin 4.5s linear infinite,orbBreath 2.6s ease-in-out infinite;transition:filter .35s}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-primary:hover::after{filter:blur(12px)}
+.btn-primary:active{transform:translateY(0) scale(.98)}
+
+/* ==========================================================================
+   5. Navigation
+   Fixed pill-shaped bar. js/main.js adds:
+     .nav.scrolled      after 40px of scroll (darker bar)
+     .nav.open          mobile panel open (below 1060px)
+     .nav-item.open     a dropdown / the Solutions flyout is open
+   ========================================================================== */
+
+.nav{position:fixed;inset:0 0 auto;z-index:50;padding:16px 0;padding-top:max(16px,env(safe-area-inset-top))}
+.nav-bar{display:flex;align-items:center;gap:20px;min-height:64px;padding:0 10px 0 22px;border-radius:999px;background:rgba(14,14,16,.94);border:1px solid var(--line);transition:background .3s}
+.nav.scrolled .nav-bar{background:rgba(12,12,14,.97)}
+.brand{display:flex;align-items:center;flex:none}
+.brand img{height:30px;width:auto}
+/* anchor jumps land below the fixed bar */
+html{scroll-padding-top:104px}
+/* hidden SVG sprite holding the menu icons */
+.icon-sprite{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ---------- Top-level links ---------- */
+.nav-links{display:flex;align-items:center;gap:4px;margin:0 auto;padding:0;list-style:none}
+.nav-item{position:relative}
+.nav-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:0;border-radius:999px;background:none;font:500 15px/1 var(--font);color:var(--muted);text-decoration:none;cursor:pointer;transition:color .2s,background .2s}
+.nav-link:hover,.nav-item.open > .nav-link{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-link > svg{width:12px;height:12px;opacity:.7;transition:transform .25s var(--ease)}
+.nav-item.open > .nav-link > svg{transform:rotate(180deg)}
+
+/* ---------- Dropdown menus (Product, Explore, Company) ---------- */
+.dropdown{position:absolute;top:calc(100% + 18px);left:-8px;z-index:2;min-width:330px;padding:8px;border-radius:22px;
+  background:#0E0E11;border:1px solid var(--line-2);box-shadow:0 30px 70px -24px rgba(0,0,0,.95);
+  opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .2s var(--ease),transform .2s var(--ease),visibility .2s}
+/* hover bridge: keeps the pointer "inside" the item while it crosses the gap to the panel */
+.dropdown::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:20px}
+.nav-item.open .dropdown{opacity:1;visibility:visible;transform:none}
+.dropdown a{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:14px;text-decoration:none;color:var(--muted);transition:background .16s,color .16s}
+.dropdown a:hover,.dropdown a:focus-visible{background:rgba(255,255,255,.05);color:var(--text)}
+.dd-txt b{display:block;font-size:14.5px;font-weight:600;line-height:1.25;color:var(--text)}
+.dd-txt span{display:block;margin-top:2px;font-size:12.5px;line-height:1.35;color:var(--dim)}
+.dd-sep{height:1px;margin:6px 10px;background:var(--line)}
+
+/* icon tile, shared by dropdowns and the Solutions flyout; turns sky blue on hover */
+.dd-ico,.sol-ico,.sol-cat-ico{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;
+  border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);transition:color .16s,border-color .16s,background .16s}
+.dd-ico svg,.sol-ico svg,.sol-cat-ico svg{width:17px;height:17px}
+.dropdown a:hover .dd-ico,.sol-link:hover .sol-ico,.sol-cat[aria-selected="true"] .sol-cat-ico{color:var(--sky);border-color:rgba(76,194,240,.4);background:rgba(76,194,240,.1)}
+
+/* ---------- Mega flyouts (Product, Solutions) ----------
+   Left rail of categories; hovering/selecting one swaps the link panel on the right.
+   It spans the full width of the nav bar. */
+.nav-bar{position:relative}
+.nav-item.nav-sol{position:static}
+.sol-fly{position:absolute;top:100%;left:0;right:0;z-index:2;padding-top:10px;
+  opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-6px);transition:opacity .22s var(--ease),transform .22s var(--ease),visibility .22s}
+.nav-item.open .sol-fly{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+/* hover bridge: the flyout starts at the bottom of the bar, ~9px below the Solutions button.
+   This invisible strip fills that gap so the pointer never "leaves" the item on its way down. */
+.sol-fly::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:14px}
+.sol-inner{display:grid;grid-template-columns:260px minmax(0,1fr);border-radius:26px;overflow:hidden;
+  background:#0E0E11;border:1px solid var(--line-2);box-shadow:0 30px 70px -24px rgba(0,0,0,.95)}
+.sol-rail{padding:22px 14px;border-right:1px solid var(--line);background:linear-gradient(180deg,rgba(76,194,240,.06),rgba(76,194,240,0) 75%)}
+.sol-rail-label{padding:0 12px 12px;font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--sky)}
+.sol-cat{display:flex;align-items:center;gap:12px;width:100%;padding:9px 12px;border:1px solid transparent;border-radius:16px;background:none;text-align:left;cursor:pointer;transition:background .18s,border-color .18s}
+.sol-cat + .sol-cat{margin-top:4px}
+.sol-cat:hover{background:rgba(255,255,255,.04)}
+.sol-cat[aria-selected="true"]{background:rgba(76,194,240,.08);border-color:rgba(76,194,240,.3)}
+.sol-cat-txt b{display:block;font-size:15px;font-weight:600;color:var(--muted)}
+.sol-cat[aria-selected="true"] .sol-cat-txt b{color:var(--text)}
+.sol-cat-txt span{display:block;margin-top:2px;font-size:12.5px;color:var(--dim)}
+.sol-panels{display:grid;padding:22px 26px 24px 28px}
+.sol-panel{grid-area:1/1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 24px;align-content:start;opacity:0;visibility:hidden;transition:opacity .2s var(--ease)}
+/* only the selected category's panel (.on, set by js/main.js) shows; scoped to the OPEN
+   flyout so hidden panels never catch clicks */
+.nav-item.open .sol-panel.on{opacity:1;visibility:visible}
+/* "Explore <module>" link under a Product panel */
+.sol-more{grid-column:1/-1;justify-self:start;display:inline-flex;align-items:center;gap:8px;margin:10px 12px 0;padding-top:14px;font-size:13.5px;font-weight:600;color:var(--sky);text-decoration:none}
+.sol-more .ph{width:14px;height:14px;transition:transform .2s var(--ease)}
+.sol-more:hover .ph{transform:translateX(3px)}
+.sol-link{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border-radius:14px;text-decoration:none;transition:background .16s}
+.sol-link:hover,.sol-link:focus-visible{background:rgba(255,255,255,.05)}
+.sol-link-txt b{display:block;font-size:14.5px;font-weight:600;line-height:1.25;color:var(--text)}
+.sol-link-txt span{display:block;margin-top:3px;font-size:12.5px;line-height:1.4;color:var(--dim)}
+@media (max-width:1240px){.sol-inner{grid-template-columns:220px minmax(0,1fr)}}
+/* compact rail (Product): category names only, on one line; each panel opens with
+   the module name and its one-line summary instead */
+.sol-fly.compact .sol-inner{grid-template-columns:300px minmax(0,1fr)}
+.sol-fly.compact .sol-cat{padding:7px 12px}
+.sol-fly.compact .sol-cat + .sol-cat{margin-top:2px}
+.sol-fly.compact .sol-cat-txt span{display:none}
+.sol-head{grid-column:1/-1;display:grid;gap:4px;margin:0 12px 14px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.sol-head b{font-size:22px;font-weight:300;letter-spacing:-.02em;color:#fff}
+.sol-head span{font-size:13.5px;color:var(--muted)}
+@media (max-width:1240px){.sol-fly.compact .sol-inner{grid-template-columns:270px minmax(0,1fr)}}
+/* grouped panel (Solutions > Industry): three titled columns of short links */
+.sol-panel.grouped{grid-template-columns:repeat(3,minmax(0,1fr));gap:0 18px}
+.sol-group{display:grid;align-content:start;gap:2px}
+.sol-group-label{margin:0 12px 8px;padding-bottom:10px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--sky)}
+.sol-link.slim{align-items:center;padding:7px 12px}
+.sol-link.slim .sol-ico{width:30px;height:30px;border-radius:10px}
+.sol-link.slim .sol-ico svg{width:16px;height:16px}
+
+/* ---------- Right side: log in, sign up, book a demo ---------- */
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-right .login{font-size:15px;font-weight:500;color:var(--muted);text-decoration:none;padding:0 12px;min-height:44px;display:inline-flex;align-items:center}
+.nav-right .login:hover{color:var(--text)}
+/* hamburger (mobile) */
+.menu-btn{display:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line-2);background:rgba(255,255,255,.04);cursor:pointer;align-items:center;justify-content:center}
+.menu-btn span{display:block;width:16px;height:1.5px;background:var(--text);position:relative}
+.menu-btn span::before,.menu-btn span::after{content:"";position:absolute;left:0;width:16px;height:1.5px;background:var(--text);transition:transform .25s}
+.menu-btn span::before{top:-5px}.menu-btn span::after{top:5px}
+.nav.open .menu-btn span{background:transparent}
+.nav.open .menu-btn span::before{transform:translateY(5px) rotate(45deg)}
+.nav.open .menu-btn span::after{transform:translateY(-5px) rotate(-45deg)}
+/* mobile menu panel */
+.mobile-panel{display:none}
+/* tablet & mobile: hide desktop links, show the hamburger */
+@media (max-width:1060px){
+  .nav-links,.nav-right .login,.nav-right .signup{display:none}
+  .nav-right{margin-left:auto}
+  .menu-btn{display:inline-flex}
+  /* the panel scrolls on its own; the page behind it is locked by js/main.js */
+  .nav.open .mobile-panel{display:block;margin-top:10px;padding:14px;border-radius:24px;background:#0B0B0D;border:1px solid var(--line);
+    max-height:calc(100svh - 120px);overflow-y:auto;overscroll-behavior:contain}
+  .mobile-panel a{display:flex;align-items:center;min-height:48px;padding:0 14px;border-radius:14px;text-decoration:none;font-size:17px;font-weight:500;color:var(--text)}
+  .mobile-panel a:hover{background:rgba(255,255,255,.05)}
+  /* menu groups: Product, Solutions, Explore, Company */
+  .mnav-group{padding:6px 0 10px;border-bottom:1px solid var(--line)}
+  .mnav-group > b{display:block;padding:10px 14px 4px;font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--sky)}
+  .mobile-panel .mnav-group a{min-height:44px;font-size:16px;color:var(--muted)}
+  .mobile-panel .mnav-group a:hover{color:var(--text)}
+  .mobile-panel .mnav-plain a{color:var(--text)}
+  /* Solutions categories expand in place */
+  .mnav-sub > summary{list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 14px;border-radius:14px;font-size:16px;font-weight:500;color:var(--muted);cursor:pointer}
+  .mnav-sub > summary::-webkit-details-marker{display:none}
+  .mnav-sub > summary::after{content:"";width:7px;height:7px;margin-right:4px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s var(--ease)}
+  .mnav-sub[open] > summary{color:var(--text)}
+  .mnav-sub[open] > summary::after{transform:rotate(225deg) translateY(-2px)}
+  .mobile-panel .mnav-sub a{min-height:40px;margin-left:14px;padding-left:14px;border-left:1px solid var(--line);border-radius:0 12px 12px 0;font-size:15px;color:var(--dim)}
+  /* group label inside an expanded category (Industry) */
+  .mobile-panel .mnav-label{margin:12px 0 4px 14px;padding-left:14px;font-size:12.5px;font-weight:600;color:var(--sky)}
+  .mobile-panel .row{display:flex;gap:8px;padding:14px 4px 2px}
+  .mobile-panel .row .btn{flex:1}
+}
+/* small phones */
+@media (max-width:520px){.nav-right .demo{display:none}.brand img{height:26px}}
+
+/* ==========================================================================
+   6. Sections & section headings
+   <section class="sec"> gives standard vertical rhythm; .sec-head groups kicker, title and lede.
+   ========================================================================== */
+
+section{position:relative}
+.sec{padding:clamp(80px,9vw,130px) 0}
+.sec-head{display:grid;gap:22px;max-width:860px}
+.sec-head.center{margin-inline:auto;text-align:center;justify-items:center}
+
+/* ==========================================================================
+   7. Shared components
+   ========================================================================== */
+
+/* small colored eyebrow label */
+.label{font-size:14px;font-weight:600;color:var(--sky);letter-spacing:.01em}
+/* frosted glass card */
+.glass{border-radius:24px;border:1px solid var(--line-2);background:linear-gradient(160deg,rgba(44,44,46,.55),rgba(12,12,14,.85) 65%);box-shadow:0 40px 100px -50px rgba(255,255,255,0.12),inset 0 1px 0 rgba(255,255,255,.06)}
+/* section kicker above a heading */
+.kicker{display:block;font-size:clamp(14px,1.15vw,17px);font-weight:600;letter-spacing:.01em;line-height:1.3;color:var(--sky);margin-bottom:20px}
+/* trust chips: small pill list with a tick icon */
+.trust{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.trust li{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);font-size:13px;font-weight:600;color:var(--muted);transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .35s}
+.trust svg{width:15px;height:15px;color:var(--leaf)}
+/* compliance seal: the official logo (assets/compliance/) on a small white disc,
+   so the blue ISO marks stay readable on the dark background */
+.seal{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+.seal img{width:100%;height:100%;object-fit:contain}
+.seal.iso img{width:64%;height:64%}
+/* larger seal; .plain drops the white disc for logos that are already round badges (GDPR, DPDP) */
+.seal.lg{width:46px;height:46px}
+.seal.plain{background:none;box-shadow:none}
+/* logo-only row (hero): no pill around each item */
+.trust.trust-logos{gap:12px;align-items:center}
+.trust.trust-logos li{padding:0;border:0;background:none;border-radius:50%;transition:transform .25s var(--ease)}
+.trust.trust-logos li:hover{transform:translateY(-2px)}
+/* row of call-to-action buttons */
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+
+/* ==========================================================================
+   8. CTA horizon
+   Closing call-to-action band with a glowing planet horizon (.horizon) and light flare (.flare).
+   ========================================================================== */
+
+.cta{padding:clamp(100px,11vw,160px) 0 clamp(220px,26vw,330px);text-align:center;overflow:hidden}
+.cta::after{content:"";position:absolute;inset:auto 0 0;height:160px;background:linear-gradient(180deg,transparent,var(--void));pointer-events:none}
+.horizon{position:absolute;left:50%;width:2600px;height:2600px;border-radius:50%;bottom:calc(-2600px + clamp(150px,18vw,230px));transform:translateX(-50%);background:radial-gradient(50% 50% at 50% 50%,#0C0C0E 92%,#1E1E20 99%,#4A7BFF 100%);box-shadow:0 -1px 0 0 rgba(255,255,255,0.63),0 -20px 80px 10px rgba(255,255,255,0.12),0 -80px 220px 40px rgba(255,255,255,0.084);pointer-events:none}
+.flare{position:absolute;left:50%;bottom:clamp(120px,17vw,210px);width:900px;height:120px;transform:translateX(-50%);background:radial-gradient(50% 50% at 50% 50%,rgba(220,235,255,.75),rgba(76,194,240,.25) 35%,transparent 70%);filter:blur(10px);pointer-events:none}
+.cta .sec-head{position:relative;z-index:1}
+.cta .cta-row{justify-content:center;margin-top:12px}
+.cta .lede{margin:0 auto}
+
+/* ==========================================================================
+   9. FAQ
+   Native <details>/<summary> accordion; .pm is the plus/minus icon.
+   ========================================================================== */
+
+.faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:64px;align-items:start}
+.faq-side{position:sticky;top:120px;display:grid;gap:20px}
+.faq-side a{color:var(--sky);text-underline-offset:4px}
+details{border-bottom:1px solid var(--line)}
+details:first-child{border-top:1px solid var(--line)}
+summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:26px 4px;cursor:pointer;font-size:clamp(18px,1.7vw,21px);font-weight:500;letter-spacing:-.01em;line-height:1.35}
+summary::-webkit-details-marker{display:none}
+.pm{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--line-2);position:relative;transition:background .3s,border-color .3s,transform .4s var(--ease)}
+.pm::before,.pm::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;background:var(--text);transform:translate(-50%,-50%)}
+.pm::after{transform:translate(-50%,-50%) rotate(90deg)}
+details[open] .pm{transform:rotate(45deg);background:var(--volt);border-color:var(--volt)}
+details[open] summary{color:#fff}
+.ans{padding:0 64px 28px 4px;color:var(--muted);font-size:16.5px;max-width:42em}
+.ans .todo{color:#F6C27A}
+@media (max-width:900px){.faq-grid{grid-template-columns:1fr;gap:32px}.faq-side{position:static}.ans{padding-right:4px}}
+
+/* ==========================================================================
+   10. Footer
+   Layout (desktop): a narrow left rail with the social links, then the main
+   area: a large faded "Product" title with the logo, the product module
+   columns, a divider, the company columns, and a full-width legal bar.
+   Columns with more than 4 links are collapsed behind "Show more" by js/main.js
+   (without JavaScript every link simply shows).
+   ========================================================================== */
+
+footer{position:relative;border-top:1px solid var(--line);padding:88px 0 0;background:linear-gradient(180deg,rgba(14,14,18,.6),var(--void))}
+/* soft glow along the top edge */
+footer::before{content:"";position:absolute;left:50%;top:-1px;width:min(900px,80%);height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,rgba(76,194,240,.55),rgba(155,107,255,.45),transparent);pointer-events:none}
+.f-wrap{display:grid;grid-template-columns:96px minmax(0,1fr);gap:48px}
+
+/* ---------- Left rail: social links ---------- */
+.f-rail{display:grid;gap:18px;align-content:start}
+.f-rail-label{font-size:14px;font-weight:600;color:var(--text)}
+.socials{display:flex;flex-direction:column;gap:10px}
+.socials a{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--muted);transition:color .2s,border-color .2s,background .2s,transform .2s var(--ease)}
+.socials a:hover{color:#fff;border-color:rgba(76,194,240,.5);background:rgba(76,194,240,.1);transform:translateY(-2px)}
+.socials svg{width:20px;height:20px}
+
+/* ---------- Main area header: faded section title + logo ---------- */
+.f-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:40px}
+.f-big{font-size:clamp(44px,5vw,72px);font-weight:300;letter-spacing:-.045em;line-height:.95;
+  background:linear-gradient(180deg,rgba(255,255,255,.3) 0%,rgba(255,255,255,.06) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.f-brand{display:grid;justify-items:end;gap:12px;text-align:right}
+.f-brand img{height:46px;width:auto}
+
+/* ---------- Link columns ---------- */
+.f-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:44px 32px}
+.f-col h3{margin:0 0 16px;font-size:16px;font-weight:600;letter-spacing:-.005em;line-height:1.3;color:var(--sky)}
+.f-col.plain h3{color:var(--text)}
+.f-col ul{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+.f-col a{font-size:14px;color:var(--muted);text-decoration:none;line-height:1.4;transition:color .2s}
+.f-col a:hover{color:var(--text)}
+/* collapsed column: only the first four links show */
+.f-col.collapsed li:nth-child(n+5){display:none}
+.f-col li{animation:fIn .35s var(--ease) both}
+@keyframes fIn{from{opacity:0;transform:translateY(-4px)}}
+/* "Show more" / "Show less" toggle (added by js/main.js) */
+.f-more{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:0;border:0;background:none;font:500 13.5px var(--font);color:var(--dim);cursor:pointer;transition:color .2s}
+.f-more:hover{color:var(--sky)}
+.f-more svg{width:12px;height:12px;transition:transform .25s var(--ease)}
+.f-more[aria-expanded="true"] svg{transform:rotate(180deg)}
+.f-rule{height:1px;margin:48px 0 44px;background:linear-gradient(90deg,var(--line-2),var(--line) 70%,transparent)}
+
+/* ---------- Legal bar ---------- */
+.f-bottom{margin-top:72px;padding:26px 0 calc(26px + env(safe-area-inset-bottom));border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+.f-bottom-in{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px 24px}
+.f-bottom nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 0}
+.f-bottom a{text-decoration:none;padding:0 18px;transition:color .2s}
+.f-bottom a:last-child{padding-right:0}
+/* thin vertical divider between legal links */
+.f-bottom a + a{border-left:1px solid var(--line-2)}
+.f-bottom a:hover{color:var(--text)}
+
+/* ---------- Footer: tablet & mobile ---------- */
+@media (max-width:1000px){
+  .f-wrap{grid-template-columns:1fr;gap:0}
+  /* the social rail moves below the links and lays out in a row */
+  .f-rail{order:2;margin-top:48px;padding-top:32px;border-top:1px solid var(--line)}
+  .socials{flex-direction:row;flex-wrap:wrap}
+  .f-cols{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:700px){
+  footer{padding-top:64px}
+  .f-head{flex-direction:column-reverse;gap:28px}
+  .f-brand{justify-items:start;text-align:left}
+  .f-cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:36px 20px}
+  .f-bottom{margin-top:48px}
+  /* stacked legal links: no dividers, so a wrapped line never starts with one */
+  .f-bottom nav{gap:10px 22px}
+  .f-bottom a{padding:0}
+  .f-bottom a + a{border-left:0}
+}
+
+/* ==========================================================================
+   11. Accessibility: reduced motion
+   Respects the OS 'reduce motion' setting across the whole site.
+   ========================================================================== */
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+
+/* ==========================================================================
+   12. Scroll progress bar
+   Thin bar pinned to the top of the window that fills as the page is read.
+   Same violet -> blue -> cyan light as the voice-orb buttons. The gradient is
+   sized to the full window, so each color sits at a fixed point of the page.
+   js/main.js sets the width of the inner <i>.
+   ========================================================================== */
+
+.scroll-progress{position:fixed;top:0;left:0;right:0;z-index:60;height:2px;pointer-events:none}
+.scroll-progress i{position:relative;display:block;width:0;height:100%;border-radius:0 2px 2px 0;
+  background:linear-gradient(90deg,#9B6BFF 0%,#6E78FF 28%,#3FE0E0 68%,#4CC2F0 100%) 0 0/100vw 100% no-repeat;
+  box-shadow:0 0 10px rgba(110,120,255,.55),0 0 18px rgba(63,224,224,.25);transition:width .12s linear}
+/* glowing head at the leading edge */
+.scroll-progress i::after{content:"";position:absolute;right:-6px;top:50%;width:12px;height:12px;border-radius:50%;transform:translateY(-50%);
+  background:radial-gradient(circle,rgba(255,255,255,.95) 0%,rgba(76,194,240,.6) 35%,rgba(76,194,240,0) 70%);opacity:0;transition:opacity .3s}
+.scroll-progress.on i::after{opacity:1}
+@media (prefers-reduced-motion:reduce){.scroll-progress i{transition:none}}

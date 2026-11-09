@@ -1,0 +1,450 @@
+@import "tailwindcss";
+@import "./theme.css";
+
+/* `pinned:` — screens wide AND tall enough for sticky, scroll-driven stages
+   (≥1024×760, or ≥1200×700). Keep in sync with `pinnedQuery` in src/theme/breakpoints.ts. */
+@custom-variant pinned {
+  @media (min-width: 64rem) and (min-height: 47.5rem),
+    (min-width: 75rem) and (min-height: 43.75rem) {
+    @slot;
+  }
+}
+
+/* `short:` — short viewports (laptops ≤ 850px tall): pinned stages tighten up. */
+@custom-variant short (@media (max-height: 53.125rem));
+
+/* `dark:` follows data-theme, ready for a future light mode. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---- Animated custom properties for the voice-orb ring -------------------- */
+/* --ga: rotation angle of the conic ring · --pg: 0→1 breathing value */
+@property --ga {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --pg {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+@keyframes gaspin {
+  to {
+    --ga: 360deg;
+  }
+}
+@keyframes orb-breath {
+  0%,
+  100% {
+    --pg: 0;
+  }
+  50% {
+    --pg: 1;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    background: var(--void);
+    scroll-padding-top: var(--spacing-nav);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-body font-body text-foreground antialiased;
+    /* safety net only — every real overflow is fixed at its source */
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply leading-display font-light tracking-tight text-balance;
+  }
+
+  p {
+    @apply text-pretty;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    @apply block max-w-full;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  :focus-visible {
+    @apply rounded-sm outline-2 outline-offset-3 outline-ring;
+  }
+
+  ::selection {
+    @apply bg-accent/30 text-strong;
+  }
+
+  /* Lenis smooth scroll */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+}
+
+/* ---- Gradient text ------------------------------------------------------- */
+/* padding/margin trick keeps descenders from being clipped by background-clip */
+@utility text-ink {
+  background-image: var(--grad-ink);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+@utility text-gradient-stat {
+  background-image: var(--grad-stat);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+@utility text-gradient-tag {
+  background-image: var(--grad-tag);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+@utility text-gradient-footer {
+  background-image: var(--grad-footer-title);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* ---- Icons ---------------------------------------------------------------- */
+/* Brand-gradient icon fill (sky-100 → periwinkle), from <IconGradientDefs/> */
+@utility icon-gradient {
+  & svg {
+    fill: url(#ph-grad);
+  }
+}
+/* Same, applied to the icon itself */
+@utility fill-brand-gradient {
+  fill: url(#ph-grad);
+}
+
+/* ---- Avatars: initials tinted by a per-person hue (`--h` set from data) ---- */
+@utility avatar-hue {
+  color: hsl(var(--h) var(--avatar-fg));
+  background-color: hsl(var(--h) var(--avatar-bg));
+}
+
+/* ---- Hero backgrounds ------------------------------------------------------ */
+@utility bg-hero-glow {
+  background-image: var(--grad-hero-glow);
+}
+@utility bg-hero-glow-mobile {
+  background-image: var(--grad-hero-glow-mobile);
+}
+@utility bg-hero-vignette {
+  background-image: var(--grad-hero-vignette);
+}
+@utility bg-hero-vignette-mobile {
+  background-image: var(--grad-hero-vignette-mobile);
+}
+
+/* ---- Assistant orb face (sizes scale with --R, the orb radius) ------------- */
+@utility orb-eye {
+  width: calc(var(--R) * 0.085);
+  height: calc(var(--R) * 0.25);
+  border-radius: 9999px;
+  background: var(--ice);
+  box-shadow:
+    0 0 calc(var(--R) * 0.08) var(--orb-eye-glow),
+    0 0 calc(var(--R) * 0.2) var(--orb-eye-halo);
+}
+@utility orb-speech {
+  font-size: calc(var(--R) * 0.15);
+  text-shadow: 0 0 calc(var(--R) * 0.12) var(--orb-text-glow);
+}
+
+/* Soft sky glow behind text (selected tab keyword) */
+@utility text-glow-sky {
+  text-shadow: var(--text-glow-sky);
+}
+
+/* Animated "..." after text (assistant working) */
+@keyframes typing-dots {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+}
+@utility typing-dots {
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 1.2em;
+    text-align: left;
+    animation: typing-dots 1.2s steps(4) infinite;
+  }
+}
+
+@utility bg-orb-bloom {
+  background-image: var(--grad-orb-bloom);
+}
+
+/* ---- CTA horizon ------------------------------------------------------------ */
+@utility bg-horizon {
+  background-image: var(--grad-horizon);
+}
+@utility bg-flare {
+  background-image: var(--grad-flare);
+}
+
+/* ---- Barbell spectrum ----------------------------------------------------- */
+@utility bg-barbell-stage {
+  background-image: var(--grad-barbell-stage);
+}
+@utility bg-spectrum-vertical {
+  background-image: var(--grad-spectrum-vertical);
+}
+/* Person pin ring in its zone colour (--c), with a dark gap and drop shadow */
+@utility pin-ring {
+  box-shadow:
+    0 0 0 2.5px var(--c),
+    0 0 0 6px var(--pin-gap),
+    0 10px 24px -8px rgb(0 0 0 / 0.8);
+}
+@utility pin-ring-on {
+  box-shadow:
+    0 0 0 3px var(--c),
+    0 0 0 7px var(--pin-gap),
+    0 0 34px 4px color-mix(in srgb, var(--c) 55%, transparent),
+    0 14px 30px -8px rgb(0 0 0 / 0.8);
+}
+@utility bg-plate-warm {
+  background-image: var(--grad-plate-warm);
+}
+@utility bg-plate-warm-alt {
+  background-image: var(--grad-plate-warm-alt);
+}
+@utility bg-plate-cool {
+  background-image: var(--grad-plate-cool);
+}
+@utility bg-plate-cool-alt {
+  background-image: var(--grad-plate-cool-alt);
+}
+@utility bg-col-warm {
+  background-image: var(--grad-col-warm);
+}
+@utility bg-col-cool {
+  background-image: var(--grad-col-cool);
+}
+
+/* ---- Circuit board ---------------------------------------------------------- */
+@utility bg-hub {
+  background-image: var(--grad-hub);
+}
+@utility bg-node-icon {
+  background-image: var(--grad-node-icon);
+}
+@utility bg-circuit-glow {
+  background-image: var(--grad-circuit-glow);
+}
+/* Rotating conic ring around the hub (only the border shows, via mask) */
+@utility hub-ring {
+  background: conic-gradient(from var(--ga), var(--hub-ring-stops));
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  animation: gaspin 6s linear infinite;
+}
+/* Node glows when the board is unified (sized by --u, the board scale) */
+@utility node-glow-sky {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 calc(40px * var(--u, 1)) calc(-14px * var(--u, 1))
+      color-mix(in srgb, var(--sky) 70%, transparent);
+}
+@utility node-glow-leaf {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 calc(40px * var(--u, 1)) calc(-14px * var(--u, 1))
+      color-mix(in srgb, var(--leaf) 60%, transparent);
+}
+/* Glow around the hub once unified */
+@utility hub-glow {
+  box-shadow: 0 0 calc(50px * var(--u, 1)) color-mix(in srgb, var(--sky) 55%, transparent);
+}
+@keyframes wire-pulse {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---- Dashboard dot grid (fades towards the edges) ----------------------------- */
+@utility dot-grid {
+  background: radial-gradient(var(--dot-grid) 1px, transparent 1px) 0 0 / 22px 22px;
+  mask-image: radial-gradient(80% 70% at 50% 40%, #000, transparent);
+}
+
+/* ---- Thin scrollbar that stays inside rounded panels ---------------------- */
+/* Use on the scrolling element; give it its own inset (margin) from the
+   rounded container so the bar never reaches the corners. */
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: var(--scrollbar-thumb);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+}
+
+/* ---- Gradient backgrounds -------------------------------------------------- */
+@utility bg-glass {
+  background-image: var(--grad-glass);
+}
+@utility bg-node {
+  background-image: var(--grad-node);
+}
+@utility bg-bar {
+  background-image: var(--grad-bar);
+}
+@utility bg-bar-hi {
+  background-image: var(--grad-bar-hi);
+}
+@utility bg-bar-lo {
+  background-image: var(--grad-bar-lo);
+}
+@utility bg-meter {
+  background-image: var(--grad-meter);
+}
+@utility bg-avatar {
+  background-image: var(--grad-avatar);
+}
+@utility bg-progress {
+  background-image: var(--grad-progress);
+}
+@utility bg-spectrum {
+  background-image: var(--grad-spectrum);
+}
+@utility bg-progress-head {
+  background-image: var(--grad-progress-head);
+}
+@utility bg-rail {
+  background-image: var(--grad-rail);
+}
+@utility bg-rule {
+  background-image: var(--grad-rule);
+}
+@utility bg-dashboard {
+  background-image: var(--grad-dashboard);
+}
+@utility bg-featured {
+  background-image: var(--grad-featured);
+}
+@utility bg-selected-row {
+  background-image: var(--grad-selected-row);
+}
+@utility bg-footer-glow {
+  background-image: var(--grad-footer-glow);
+}
+@utility bg-footer {
+  background-image: var(--grad-footer-bg);
+}
+
+/* ---- Voice-orb finish ------------------------------------------------------
+   Layers back→front: spinning conic ring (background) › blurred breathing
+   halo (::after) › deep core (::before) › content.
+   Works on any rounded element: `orb rounded-full`. */
+@utility orb {
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  color: var(--text-strong);
+  background: conic-gradient(from var(--ga), var(--orb-ring-stops));
+  animation: gaspin 4.5s linear infinite;
+  text-shadow: 0 0 14px rgb(255 255 255 / 0.315);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 2.5px;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: var(--orb-core);
+    box-shadow: var(--sh-orb-core);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -2;
+    border-radius: inherit;
+    pointer-events: none;
+    background: conic-gradient(from var(--ga), var(--orb-halo-stops));
+    filter: blur(9px);
+    opacity: calc(0.32 + var(--pg) * 0.22);
+    transform: scale(calc(1 + var(--pg) * 0.03));
+    animation:
+      gaspin 4.5s linear infinite,
+      orb-breath 2.6s ease-in-out infinite;
+    transition: filter 0.35s;
+  }
+
+  &:hover::after {
+    filter: blur(12px);
+  }
+}
+
+/* ---- Reduced motion: honour the OS setting everywhere --------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
